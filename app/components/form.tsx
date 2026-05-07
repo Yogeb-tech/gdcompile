@@ -1,5 +1,6 @@
 "use client"
 import { ChangeEvent, useState, SubmitEvent } from "react";
+import camelCase  from 'camelcase';
 
 
 type TargetPlatform = {
@@ -23,6 +24,9 @@ const platforms: TargetPlatform[] = [
   { id: 5, name: "iOS" },
   { id: 6, name: "Web" },
 ];
+
+// TODO: Test the form with sample form data
+// TODO: Use CSS to layout page correctly
 
 export default function Form() {
 	const [formData, setFormData] = useState<GodotFlags>({
@@ -70,6 +74,7 @@ export default function Form() {
 				<legend>Target Platforms</legend>
 				{platforms.map(platform =>
 					<div key={platform.id}> 
+						<label htmlFor={camelCase(platform.name)}>{platform.name}</label>
 						<input type="radio" name="targetPlatforms" value={platform.name} onChange={handleFormChange}/>
 					</div> 
 				)}
