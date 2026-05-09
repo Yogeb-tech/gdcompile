@@ -1,18 +1,18 @@
-"use client"
+"use client";
 import { ChangeEvent, useState, SubmitEvent } from "react";
-import camelCase  from 'camelcase';
-import styles from './form.module.css'
+import camelCase from "camelcase";
+import styles from "./form.module.css";
 
 type TargetPlatform = {
-	id: number;
-	name: "Windows" | "macOS" | "Linux" | "Android" | "iOS" | "Web";
-}
+  id: number;
+  name: "Windows" | "macOS" | "Linux" | "Android" | "iOS" | "Web";
+};
 
 interface GodotFlags {
   buildName: string;
   godotVersion: string;
   encryptionKey: string;
-targetPlatforms: TargetPlatform["name"][];
+  targetPlatforms: TargetPlatform["name"][];
   enable3D: boolean;
 }
 
@@ -25,60 +25,90 @@ const platforms: TargetPlatform[] = [
   { id: 6, name: "Web" },
 ];
 
-// TODO: Test the form with sample form data
-
 export default function Form() {
-	const [formData, setFormData] = useState<GodotFlags>({
-		buildName: "",
-		godotVersion: "",
-		encryptionKey: "",
-		targetPlatforms: [],
-		enable3D: false,
-	});
-	
-	function handleFormChange(e: ChangeEvent<HTMLInputElement>) {
-		const { name, value, type, checked } = e.target;
-		setFormData({
-			...formData,
-			[name]: type === 'checkbox' ? checked : value
-		})
-		console.log(JSON.stringify(formData, null, 2));
-	}
+  const [formData, setFormData] = useState<GodotFlags>({
+    buildName: "",
+    godotVersion: "",
+    encryptionKey: "",
+    targetPlatforms: [],
+    enable3D: false,
+  });
 
-	function handleSubmit(e: SubmitEvent) {
-		e.preventDefault();
-		console.log(JSON.stringify(formData, null, 2))
-	}
+  function handleFormChange(e: ChangeEvent<HTMLInputElement>) {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  }
 
-  	return (<>
-		<div className={styles.container}>
-		<h1 className="title">GDCompile</h1>
-		<form onSubmit={handleSubmit}>
-			<div className={styles.formGroup}>
-				<label htmlFor="godotVersion">Godot Version</label>
-				<input type="text" name="godotVersion" id="godotVersion" onChange={handleFormChange}/>
-			</div>
-			<div className={styles.formGroup}>
-				<label htmlFor="encryptionKey">Encryption Key</label>
-				<input type="text" name="encryptionKey" id="encryptionKey" onChange={handleFormChange}/>
-			</div>
-			<div className={styles.formGroup}>
-				<label htmlFor="enable3D">Enable 3D</label>
-				<input type="checkbox" name="enable3D" id="enable3D" onChange={handleFormChange}/>
-			</div>
-			<fieldset className={styles.platformsGrid}>
-				<legend>Target Platforms</legend>
-				{platforms.map(platform =>
-					<div key={platform.id}> 
-						<label htmlFor={camelCase(platform.name)}>{platform.name}</label>
-						<input type="radio" name="targetPlatforms" value={platform.name} onChange={handleFormChange} className="platformItem"/>
-					</div> 
-				)}
-			</fieldset>
+  function handleSubmit(e: React.SubmitEvent) {
+    e.preventDefault();
+    console.log("SUBMISSION:\n" + JSON.stringify(formData, null, 2));
+  }
 
-			<button type="submit">Generate</button>
-		</form>
-		</div>
-	</>
+  return (
+    <>
+      <div className={styles.container}>
+        <h1 className="title">GDCompile</h1>
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <div>
+              <label>For Godot Latest:</label>
+              <p className="versionDisplay">4.6.2</p>
+            </div>
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="buildName">Build Name</label>
+            <input
+              type="text"
+              name="buildName"
+              id="buildName"
+              onChange={handleFormChange}
+              defaultValue="my-godot-template"
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="encryptionKey">Encryption Key</label>
+            <input
+              type="text"
+              name="encryptionKey"
+              id="encryptionKey"
+              onChange={handleFormChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="enable3D">Enable 3D</label>
+            <input
+              type="checkbox"
+              name="enable3D"
+              id="enable3D"
+              onChange={handleFormChange}
+            />
+          </div>
+          <fieldset className={styles.platformsGrid}>
+            <legend>Target Platforms</legend>
+            {platforms.map((platform) => (
+              <div key={platform.id}>
+                <label htmlFor={camelCase(platform.name)}>
+                  {platform.name}
+                </label>
+                <input
+                  type="radio"
+                  name="targetPlatforms"
+                  value={platform.name}
+                  onChange={handleFormChange}
+                  className="platformItem"
+                />
+              </div>
+            ))}
+          </fieldset>
+
+          <button type="submit" onSubmit={handleSubmit}>
+            Generate
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
