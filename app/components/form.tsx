@@ -1,7 +1,7 @@
 "use client"
 import { ChangeEvent, useState, SubmitEvent } from "react";
 import camelCase  from 'camelcase';
-
+import styles from './form.module.css'
 
 type TargetPlatform = {
 	id: number;
@@ -26,7 +26,6 @@ const platforms: TargetPlatform[] = [
 ];
 
 // TODO: Test the form with sample form data
-// TODO: Use CSS to layout page correctly
 
 export default function Form() {
 	const [formData, setFormData] = useState<GodotFlags>({
@@ -52,36 +51,34 @@ export default function Form() {
 	}
 
   	return (<>
-		<h1>GDCompile</h1>
+		<div className={styles.container}>
+		<h1 className="title">GDCompile</h1>
 		<form onSubmit={handleSubmit}>
-			<div>
+			<div className={styles.formGroup}>
 				<label htmlFor="godotVersion">Godot Version</label>
 				<input type="text" name="godotVersion" id="godotVersion" onChange={handleFormChange}/>
 			</div>
-			<div>
-				<label htmlFor="targetPlatforms">Target Platform</label>
-				<input type="text" name="targetPlatforms" id="targetPlatforms" onChange={handleFormChange}/>
-			</div>
-			<div>
+			<div className={styles.formGroup}>
 				<label htmlFor="encryptionKey">Encryption Key</label>
 				<input type="text" name="encryptionKey" id="encryptionKey" onChange={handleFormChange}/>
 			</div>
-			<div>
+			<div className={styles.formGroup}>
 				<label htmlFor="enable3D">Enable 3D</label>
 				<input type="checkbox" name="enable3D" id="enable3D" onChange={handleFormChange}/>
 			</div>
-			<fieldset>
+			<fieldset className={styles.platformsGrid}>
 				<legend>Target Platforms</legend>
 				{platforms.map(platform =>
 					<div key={platform.id}> 
 						<label htmlFor={camelCase(platform.name)}>{platform.name}</label>
-						<input type="radio" name="targetPlatforms" value={platform.name} onChange={handleFormChange}/>
+						<input type="radio" name="targetPlatforms" value={platform.name} onChange={handleFormChange} className="platformItem"/>
 					</div> 
 				)}
 			</fieldset>
 
-			<button type="submit">Submit</button>
+			<button type="submit">Generate</button>
 		</form>
+		</div>
 	</>
   );
 }
