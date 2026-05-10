@@ -1,7 +1,8 @@
 "use client";
-import { ChangeEvent, useState, SubmitEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import camelCase from "camelcase";
 import styles from "./form.module.css";
+import { useLatestGodotBranch } from "../hooks/useLatestGodotBranch";
 
 type TargetPlatform = {
   id: number;
@@ -26,6 +27,7 @@ const platforms: TargetPlatform[] = [
 ];
 
 export default function Form() {
+  const { data, loading, error } = useLatestGodotBranch();
   const [formData, setFormData] = useState<GodotFlags>({
     buildName: "",
     godotVersion: "",
@@ -55,7 +57,7 @@ export default function Form() {
           <div className={styles.formGroup}>
             <div>
               <label>For Godot Latest:</label>
-              <p className="versionDisplay">4.6.2</p>
+              <p className="versionDisplay">{data?.branchName}</p>
             </div>
           </div>
           <div className={styles.formGroup}>
