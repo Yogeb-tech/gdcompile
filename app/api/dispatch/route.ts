@@ -52,3 +52,8 @@ export async function POST(request: Request){
 		
 	}
 }
+
+export async function GET(request: Request){
+	const recentJobs = Array.from(jobs.values()).slice(-10);
+	return Response.json({jobs: recentJobs})
+}
