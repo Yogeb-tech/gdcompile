@@ -1,4 +1,5 @@
 import { GodotBuildResponse, JobStatus } from "@/app/types/godot";
+import { StatusCodes } from "http-status-codes";
 import { NextResponse } from "next/server";
 
 // Store jobs in memory
@@ -12,7 +13,7 @@ export async function POST(request: Request){
 		if (!buildName || !targetPlatforms || targetPlatforms.length === 0) {
 			return NextResponse.json(
 				{ error: 'Missing required fields: buildName, targetPlatforms' },
-				{ status: 400 }
+				{ status: StatusCodes.BAD_REQUEST }
 			);
     	}
 
@@ -40,13 +41,13 @@ export async function POST(request: Request){
 			message: 'Build dispatched (mock mode)'
 		};
 
-		return NextResponse.json(response, {status: 202})
+		return NextResponse.json(response, {status: StatusCodes.ACCEPTED})
 
 	} catch (error) {
 		console.error("Dispatch error: ", error)
 		return NextResponse.json(
 			{error: "Job not found"}, 
-			{status: 404}
+			{status: StatusCodes.NOT_FOUND}
 		)
 		
 	}
