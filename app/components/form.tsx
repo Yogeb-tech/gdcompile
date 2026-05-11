@@ -3,11 +3,7 @@ import camelCase from "camelcase";
 import { ChangeEvent, useState } from "react";
 import { useLatestGodotBranch } from "../hooks/useLatestGodotBranch";
 import styles from "./form.module.css";
-
-type TargetPlatform = {
-  id: number;
-  name: "Windows" | "macOS" | "Linux" | "Android" | "iOS" | "Web";
-};
+import { TargetPlatform } from "../types/godot";
 
 interface GodotFlags {
   buildName: string;
