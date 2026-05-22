@@ -5,32 +5,34 @@ import { NextResponse } from "next/server";
 // Store jobs in memory
 const jobs = new Map<string, JobStatus>;
 
-export async function POST(request: Request){
+export async function POST(request: Request) {
 	try {
 		const body = await request.json();
-		
-		const {buildName, targetPlatforms, buildTarget, encryptionKey, additionalFlags } = body;
-		if (!buildName || !targetPlatforms || targetPlatforms.length === 0) {
+
+		const { buildName, targetPlatforms, buildTarget, encryptionKey, additionalFlags, fingerprint } = body;
+		if (!buildName || !targetPlatforms || !fingerprint || targetPlatforms.length === 0) {
 			return NextResponse.json(
 				{ error: 'Missing required fields: buildName, targetPlatforms' },
 				{ status: StatusCodes.BAD_REQUEST }
 			);
-    	}
+		}
 
 		const jobId = crypto.randomUUID();
 
-		const job: JobStatus = { 
-			id: jobId, 
+		const job: JobStatus = {
+			id: jobId,
 			buildName: buildName,
-			status: 'queued', 
+			status: 'queued',
 			createdAt: new Date().toISOString(),
-			targetPlatforms: buildTarget
+			targetPlatforms: buildTarget,
+			fingerprint: fingerprint
 		}
 
 		jobs.set(jobId, job);
 
 		// Build the SCons command
 		console.log(`[BUILD] ${buildName} for ${targetPlatforms.join(', ')}`);
+		console.log(JSON.stringify(job, null, 2))
 		console.log(`[FLAGS] ${buildTarget} ${additionalFlags}`);
 		if (encryptionKey) console.log(`[ENCRYPTION] Key provided`);
 
@@ -41,19 +43,19 @@ export async function POST(request: Request){
 			message: 'Build dispatched (mock mode)'
 		};
 
-		return NextResponse.json(response, {status: StatusCodes.ACCEPTED})
+		return NextResponse.json(response, { status: StatusCodes.ACCEPTED })
 
 	} catch (error) {
 		console.error("Dispatch error: ", error)
 		return NextResponse.json(
-			{error: "Job not found"}, 
-			{status: StatusCodes.NOT_FOUND}
+			{ error: "Job not found" },
+			{ status: StatusCodes.NOT_FOUND }
 		)
-		
+
 	}
 }
 
-export async function GET(request: Request){
+export async function GET(request: Request) {
 	const recentJobs = Array.from(jobs.values()).slice(-10);
-	return Response.json({jobs: recentJobs})
+	return Response.json({ jobs: recentJobs })
 }

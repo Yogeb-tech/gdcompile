@@ -1,27 +1,28 @@
-import { useState, useEffect } from 'react'
-import { GodotBranchData, fetchGodotBranches, findLatestReleaseBranch } from "../utils/github"
-
-// TODO: Use tag instead of branch
+import { useState, useEffect } from "react";
+import { fetchGodotTags, findLatestReleaseTag, GodotVersionData } from "../utils/github";
 
 export function useLatestGodotBranch() {
-	const [data, setData] = useState<GodotBranchData | null>(null)
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+	const [data, setData] = useState<GodotVersionData | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
 	useEffect(() => {
 		async function fetchData() {
 			try {
-				const branches = await fetchGodotBranches()
-				const latestBranch = findLatestReleaseBranch(branches)
-				setData(latestBranch)
+				const tags = await fetchGodotTags();
+				const latestTag = findLatestReleaseTag(tags);
+				setData(latestTag);
 			} catch (error: unknown) {
-				setError(error instanceof Error ? error.message : "An unexpected error occurred")
+				setError(
+					error instanceof Error ? error.message : "An unexpected error occurred"
+				);
 			} finally {
-				setLoading(false)
+				setLoading(false);
 			}
 		}
 
 		fetchData();
 	}, []);
 
-	return { data, loading, error }
+	return { data, loading, error };
 }

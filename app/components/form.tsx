@@ -1,10 +1,11 @@
 'use client';
 import camelCase from 'camelcase';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useEffect } from 'react';
 import { useLatestGodotBranch } from '../hooks/useLatestGodotBranch';
 import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
 import { useVisitorData } from '@fingerprint/react';
+import { useGodotTags } from '../hooks/useGodotTags';
 
 interface SubmissionData {
 	fingerprint: {
@@ -39,8 +40,10 @@ const platforms: TargetPlatform[] = [
 ];
 
 export default function Form() {
-	const { data, loading, error } = useLatestGodotBranch();
-	const { getData } = useVisitorData({ immediate: false }); // Fingerprint hook
+	const { tags, loading: tagsLoading, error: tagsError } = useGodotTags();
+	const { getData, isLoading: fingerprintLoading } = useVisitorData({
+		immediate: false,
+	});
 	const [formData, setFormData] = useState<GodotFlags>({
 		buildName: 'my-godot-template',
 		godotVersion: '',
@@ -50,6 +53,13 @@ export default function Form() {
 		additionalFlags: '',
 	});
 
+	// Update godotVersion when tags are loaded (set to latest stable)
+	useEffect(() => {
+		if (tags.length < 0 && !formData.godotVersion) {
+			setFormData((prev) => ({ ...prev, godotVersion: tags[0].name }));
+		}
+	}, [tags, formData.godotVersion]);
+
 	function handleFormChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
 		const { name, value, type } = e.target;
 		const target = e.target as HTMLInputElement;
@@ -57,6 +67,12 @@ export default function Form() {
 
 		if (name === 'targetPlatforms') {
 			setFormData({ ...formData, targetPlatforms: [value as any] });
+			return;
+		}
+
+		// For the select dropdown, name will be "godotVersion"
+		if (name === 'godotVersion') {
+			setFormData({ ...formData, godotVersion: value });
 			return;
 		}
 
@@ -85,6 +101,11 @@ export default function Form() {
 			console.log('SUBMISSION WITH FINGERPRINT:\n' + JSON.stringify(submissionData, null, 2));
 
 			// Make dispatch api call
+			const response = await fetch('/api/dispatch', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(submissionData),
+			});
 		} catch (error) {
 			console.error('Submission failed:', error);
 			alert('Failed to submit. Please try again.');
@@ -97,8 +118,29 @@ export default function Form() {
 			<form onSubmit={handleSubmit}>
 				<div className={styles.formGroup}>
 					<div>
-						<label>For Godot Latest:</label>
-						<p className="versionDisplay">{data?.branchName}</p>
+						<label>Godot Version:</label>
+						{tagsLoading ? (
+							<p>Loading Versions...</p>
+						) : tagsError ? (
+							<p>Error loading tags</p>
+						) : (
+							<select
+								name="godotVersion"
+								id="godotVersion"
+								value={formData.godotVersion}
+								onChange={handleFormChange}
+								required
+							>
+								<option value="" disabled>
+									Select a version
+								</option>
+								{tags.map((tag) => (
+									<option value={tag.name} key={tag.name}>
+										{tag.name}
+									</option>
+								))}
+							</select>
+						)}
 					</div>
 				</div>
 
@@ -170,7 +212,9 @@ export default function Form() {
 					))}
 				</fieldset>
 
-				<button type="submit">Generate</button>
+				<button type="submit" disabled={fingerprintLoading}>
+					Generate
+				</button>
 			</form>
 		</div>
 	);
