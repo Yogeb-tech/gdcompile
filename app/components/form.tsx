@@ -1,11 +1,11 @@
 'use client';
 import camelCase from 'camelcase';
-import { ChangeEvent, useState, useEffect } from 'react';
-import { useLatestGodotBranch } from '../hooks/useLatestGodotBranch';
+import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
 import { useVisitorData } from '@fingerprint/react';
 import { useGodotTags } from '../hooks/useGodotTags';
+import snakecaseKeys from 'snakecase-keys';
 
 interface SubmissionData {
 	fingerprint: {
@@ -13,7 +13,6 @@ interface SubmissionData {
 		requestId: string;
 		timestamp: string;
 	};
-	buildName: string;
 	godotVersion: string;
 	encryptionKey: string;
 	targetPlatforms: ('Windows' | 'macOS' | 'Linux' | 'Android' | 'iOS' | 'Web')[];
@@ -22,7 +21,6 @@ interface SubmissionData {
 }
 
 interface GodotFlags {
-	buildName: string;
 	godotVersion: string;
 	encryptionKey: string;
 	targetPlatforms: TargetPlatform['name'][];
@@ -44,18 +42,22 @@ export default function Form() {
 	const { getData, isLoading: fingerprintLoading } = useVisitorData({
 		immediate: false,
 	});
+	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
+
 	const [formData, setFormData] = useState<GodotFlags>({
-		buildName: 'my-godot-template',
-		godotVersion: '',
+		godotVersion: defaultGodotVersion,
 		encryptionKey: '',
 		targetPlatforms: [],
 		buildTarget: 'template_release',
 		additionalFlags: '',
 	});
 
+	const hasInitialized = useRef(false);
+
 	// Update godotVersion when tags are loaded (set to latest stable)
 	useEffect(() => {
-		if (tags.length < 0 && !formData.godotVersion) {
+		if (tags.length > 0 && !formData.godotVersion && !hasInitialized.current) {
+			hasInitialized.current = true;
 			setFormData((prev) => ({ ...prev, godotVersion: tags[0].name }));
 		}
 	}, [tags, formData.godotVersion]);
@@ -66,7 +68,10 @@ export default function Form() {
 		const checked = target.checked;
 
 		if (name === 'targetPlatforms') {
-			setFormData({ ...formData, targetPlatforms: [value as any] });
+			setFormData({
+				...formData,
+				targetPlatforms: [value as 'Windows' | 'macOS' | 'Linux' | 'Android' | 'iOS' | 'Web'],
+			});
 			return;
 		}
 
@@ -101,7 +106,7 @@ export default function Form() {
 			console.log('SUBMISSION WITH FINGERPRINT:\n' + JSON.stringify(submissionData, null, 2));
 
 			// Make dispatch api call
-			const response = await fetch('/api/dispatch', {
+			await fetch('/api/dispatch', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(submissionData),
@@ -145,17 +150,6 @@ export default function Form() {
 				</div>
 
 				<div className={styles.formGroup}>
-					<label htmlFor="buildName">Build Name</label>
-					<input
-						type="text"
-						name="buildName"
-						id="buildName"
-						onChange={handleFormChange}
-						defaultValue={formData.buildName}
-					/>
-				</div>
-
-				<div className={styles.formGroup}>
 					<label htmlFor="encryptionKey">Encryption Key (Not Required)</label>
 					<input
 						type="text"
@@ -195,6 +189,7 @@ export default function Form() {
 					</small>
 				</div>
 
+				{/* TODO: make this a required entry */}
 				<fieldset className={styles.platformsGrid}>
 					<legend>Target Platforms</legend>
 					{platforms.map((platform) => (

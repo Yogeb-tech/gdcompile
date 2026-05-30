@@ -29,7 +29,6 @@ export interface JobStatus {
 	completedAt?: string;
 	downloadUrl?: string;
 	error?: string;
-	buildName: string;
 	targetPlatforms: TargetPlatform["name"][];
 	fingerprint: {
 		visitorId: string | undefined;
