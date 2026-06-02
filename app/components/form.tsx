@@ -3,9 +3,11 @@ import camelCase from 'camelcase';
 import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
-import { useVisitorData } from '@fingerprint/react';
 import { useGodotTags } from '../hooks/useGodotTags';
-import snakecaseKeys from 'snakecase-keys';
+
+interface FormProps {
+	fingerprint: FingerprintData;
+}
 
 interface SubmissionData {
 	fingerprint: {
@@ -37,11 +39,8 @@ const platforms: TargetPlatform[] = [
 	{ id: 6, name: 'Web' },
 ];
 
-export default function Form() {
+export default function Form({ fingerprint }: FormProps) {
 	const { tags, loading: tagsLoading, error: tagsError } = useGodotTags();
-	const { getData, isLoading: fingerprintLoading } = useVisitorData({
-		immediate: false,
-	});
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
 
 	const [formData, setFormData] = useState<GodotFlags>({
@@ -91,16 +90,10 @@ export default function Form() {
 		e.preventDefault();
 
 		try {
-			const { visitor_id, event_id } = await getData();
-
 			// Combine form with fingerprint
 			const submissionData: SubmissionData = {
 				...formData,
-				fingerprint: {
-					visitorId: visitor_id,
-					requestId: event_id,
-					timestamp: new Date().toISOString(),
-				},
+				fingerprint: fingerprint,
 			};
 
 			console.log('SUBMISSION WITH FINGERPRINT:\n' + JSON.stringify(submissionData, null, 2));
@@ -207,9 +200,7 @@ export default function Form() {
 					))}
 				</fieldset>
 
-				<button type="submit" disabled={fingerprintLoading}>
-					Generate
-				</button>
+				<button type="submit">Generate</button>
 			</form>
 		</div>
 	);
