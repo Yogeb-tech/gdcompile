@@ -1,4 +1,4 @@
-import { GodotBuildResponse, JobStatus } from "@/app/types/godot";
+import { JobStatus } from "@/app/types/godot";
 import { StatusCodes } from "http-status-codes";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";

@@ -1,5 +1,4 @@
 import { Octokit } from "@octokit/rest";
-import { BuildTypes } from "../types/builds";
 
 export type Branch = {
 	name: string;
