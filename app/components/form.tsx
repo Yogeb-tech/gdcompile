@@ -9,7 +9,7 @@ interface FormProps {
 	fingerprint: FingerprintData;
 }
 
-interface SubmissionData {
+export interface SubmissionData {
 	fingerprint: {
 		visitorId: string | undefined;
 		requestId: string;

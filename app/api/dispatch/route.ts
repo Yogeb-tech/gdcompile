@@ -3,7 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import snakecaseKeys from "snakecase-keys";
-import { triggerWorkflow } from "@/app/utils/github";
+import { triggerWorkflow, WorkflowDispatchParams } from "@/app/utils/github";
+import { SubmissionData } from "@/app/components/form";
 
 // Store jobs in memory
 // const jobs = new Map<string, JobStatus>;
@@ -15,26 +16,24 @@ const supabase = createClient(
 export async function POST(request: Request) {
 	try {
 		const body = await request.json();
-		// TODO: Adjust inputs in form so it covers all values
-		const { targetBranch, targetTag, LtoMode, targetPlatforms, buildTarget, encryptionKey, additionalFlags, fingerprint } = body;
-		if (!targetPlatforms || !fingerprint || targetPlatforms.length === 0) {
-			return NextResponse.json(
-				{ error: 'Missing required fields: buildName, targetPlatforms' },
-				{ status: StatusCodes.BAD_REQUEST }
-			);
-		}
 
-		// Determine which build types are enabled based on buildTarget
-		const editorBuild = buildTarget === 'editor' || buildTarget === 'both';
-		const editorBuildMono = false; // Set based on your form
-		const templateBuild = buildTarget === 'template' || buildTarget === 'both';
-		const templateBuildMono = false; // Set based on your form
+		const {
+			// From WorkflowDispatchParams
+			branch, tag, platforms,
+			editorBuild, editorBuildMono, templateBuild, templateBuildMono,
+			// Shared
+			// TODO: The issue is platforms, which is still a radio field instead of checklist. Adjust platforms to match targetPlatforms
+			// TODO: LTO should also be prompted in the form and a shared value in both interfaces
+			LtoMode, encryptionKey,
+			// From SubmissionData
+			targetPlatforms, buildTarget, additionalFlags, fingerprint
+		} = body as WorkflowDispatchParams & SubmissionData;
 
 
 		// Github workflow dispatch
 		const { id } = await triggerWorkflow("main", {
-			branch: targetBranch,
-			tag: targetTag,
+			branch: branch,
+			tag: tag,
 			LtoMode: LtoMode,
 			flags: additionalFlags,
 			platforms: targetPlatforms,
@@ -50,7 +49,7 @@ export async function POST(request: Request) {
 			id: id,
 			status: 'queued',
 			createdAt: new Date().toISOString(),
-			targetPlatforms: buildTarget,
+			targetPlatforms: targetPlatforms,
 			fingerprint: fingerprint
 		}
 

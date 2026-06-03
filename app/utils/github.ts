@@ -27,13 +27,13 @@ export type WorkflowDispatchParams = {
 	branch: string,
 	tag: string,
 	LtoMode: string,
-	flags: string[]
-	encryptionKey: string
+	flags: string,
+	encryptionKey: string,
 	platforms: string[], // Comma-separated list of platforms to build (ex: windows,web,ios,linux,macos,android)
 	editorBuild: boolean,
 	editorBuildMono: boolean,
 	templateBuild: boolean,
-	templateBuildMono: boolean,
+	templateBuildMono: boolean
 }
 
 // Keep old type alias for compatibility
@@ -71,12 +71,17 @@ export async function fetchGodotTags(): Promise<Tag[]> {
 
 export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispatchParams) {
 	try {
+		const inputs = {
+			...params,
+			formattedPlatforms: params.platforms.join(",")
+		}
+
 		await octokit.rest.actions.createWorkflowDispatch({
 			owner: 'yogeb',
 			repo: 'action_godot_builder',
 			workflow_id: process.env.WORKFLOW_ID!,
 			ref: branchOrTag,
-			inputs: params
+			inputs: inputs
 		});
 
 		// Wait a moment for workflow to start
