@@ -2,11 +2,13 @@
 import React from 'react';
 import Form from './components/form';
 import { FingerprintProvider, useVisitorData } from '@fingerprint/react';
+import CenteredPage from './components/centeredPage';
 
 export default function Home() {
 	return (
 		<FingerprintProvider apiKey={process.env.NEXT_PUBLIC_FINGERPRINT_KEY!} region="us">
 			<AppContent />
+			{/*<CenteredPage h1Text="Hello There" pText="This is a pico card" />*/}
 		</FingerprintProvider>
 	);
 }
