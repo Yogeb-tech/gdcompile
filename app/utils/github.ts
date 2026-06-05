@@ -31,10 +31,10 @@ export type WorkflowDispatchParams = {
 	flags: string,
 	encryptionKey: string,
 	platforms: TargetPlatform['name'][],
-	editorBuild: boolean,
-	editorBuildMono: boolean,
-	templateBuild: boolean,
-	templateBuildMono: boolean
+	runEditor: boolean,
+	runEditorMono: boolean,
+	runTemplate: boolean,
+	runTemplateMono: boolean
 }
 
 // Keep old type alias for compatibility
@@ -75,12 +75,23 @@ export async function fetchGodotTags(): Promise<Tag[]> {
 export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispatchParams) {
 	try {
 		const inputs = {
-			...params,
-			formattedPlatforms: params.platforms.join(",")
-		}
+			repo: 'godotengine/godot',
+			'base-branch': params.branch,
+			tag: params.tag,
+			tag_release: params.tag,
+			module_flags: params.flags,
+			template_module_flags: '',
+			release_repo: '',
+			lto: params.LtoMode === 'none' ? 'lto=none' :
+				params.LtoMode === 'thin' ? 'lto=thin' : 'lto=full',
+			run_editor: params.runEditor,
+			run_editor_mono: params.runEditorMono,
+			run_template: params.runTemplate,
+			run_template_mono: params.runTemplateMono
+		};
 
 		await octokit.rest.actions.createWorkflowDispatch({
-			owner: 'yogeb',
+			owner: 'Yogeb-tech',
 			repo: 'action_godot_builder',
 			workflow_id: process.env.WORKFLOW_ID!,
 			ref: branchOrTag,
@@ -92,7 +103,7 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 
 		// Fetch ID from most recent workflow run
 		const { data } = await octokit.rest.actions.listWorkflowRuns({
-			owner: 'yogeb',
+			owner: 'Yogeb-tech',
 			repo: 'action_godot_builder',
 			workflow_id: process.env.WORKFLOW_ID!,
 			per_page: 1
@@ -112,7 +123,7 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 export async function getWorkflowStatus(target_run_id: number): Promise<string> {
 	try {
 		const { data } = await octokit.rest.actions.getWorkflowRun({
-			owner: 'yogeb',
+			owner: 'Yogeb-tech',
 			repo: 'action_godot_builder',
 			run_id: target_run_id,
 		});
@@ -134,7 +145,7 @@ export async function downloadArtifactFromRun(target_run_id: number, artifact_na
 	try {
 		// List all artifacts for the specific workflow run
 		const { data: artifactsData } = await octokit.rest.actions.listWorkflowRunArtifacts({
-			owner: 'yogeb',
+			owner: 'Yogeb-tech',
 			repo: 'action_godot_builder',
 			run_id: target_run_id,
 		});
@@ -151,7 +162,7 @@ export async function downloadArtifactFromRun(target_run_id: number, artifact_na
 
 		// 3. Use it to get the download URL
 		const downloadResponse = await octokit.rest.actions.downloadArtifact({
-			owner: 'yogeb',
+			owner: 'Yogeb-tech',
 			repo: 'action_godot_builder',
 			artifact_id: artifact.id,
 			archive_format: 'zip', // As per documentation, this must be 'zip'

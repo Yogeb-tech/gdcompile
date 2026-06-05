@@ -24,6 +24,7 @@ export interface GodotBuildResponse {
 
 export interface JobStatus {
 	id: number;
+	buildName: string;
 	status: 'queued' | 'building' | 'completed' | 'failed';
 	createdAt: string;
 	completedAt?: string;

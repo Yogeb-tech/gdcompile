@@ -53,16 +53,18 @@ export async function POST(request: Request) {
 			encryptionKey: encryptionKey,
 			// Default values for workflow-specific fields
 			branch: "main",
-			editorBuild: true,
-			editorBuildMono: false,
-			templateBuild: true,
-			templateBuildMono: false,
+			runEditor: true,
+			runEditorMono: false,
+			runTemplate: true,
+			runTemplateMono: false,
 			LtoMode: "none",  // Default or make configurable in form
 		});
 
+		// I don't need snakecase library, I can pass similar to how I passed values in trggerWorkflow()
 		// Record and save user data in DB
 		const job: JobStatus = {
 			id: id,
+			buildName: buildName,
 			status: 'queued',
 			createdAt: new Date().toISOString(),
 			targetPlatforms: targetPlatforms,
