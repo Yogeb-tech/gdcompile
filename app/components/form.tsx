@@ -222,6 +222,20 @@ export default function Form({ fingerprint }: FormProps) {
 				</div>
 
 				<div className={styles.formGroup}>
+					<label htmlFor="LtoMode">LTO Mode</label>
+					<select
+						name="LtoMode"
+						id="LtoMode"
+						onChange={handleFormChange}
+						value={formData.buildTarget}
+					>
+						<option value="none">None</option>
+						<option value="thin">Thin</option>
+						<option value="full">Full</option>
+					</select>
+				</div>
+
+				<div className={styles.formGroup}>
 					<label htmlFor="additionalFlags">Additional SCons Flags</label>
 					<input
 						type="text"
