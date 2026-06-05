@@ -3,11 +3,9 @@ import { StatusCodes } from "http-status-codes";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import snakecaseKeys from "snakecase-keys";
-import { triggerWorkflow, WorkflowDispatchParams } from "@/app/utils/github";
+import { triggerWorkflow } from "@/app/utils/github";
 import { SubmissionData } from "@/app/components/form";
 
-// Store jobs in memory
-// const jobs = new Map<string, JobStatus>;
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL!,
 	process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
@@ -17,31 +15,49 @@ export async function POST(request: Request) {
 	try {
 		const body = await request.json();
 
+		// Validate that body matches SubmissionData
+		const submissionData = body as SubmissionData;
+
+		// Extract only SubmissionData fields
 		const {
-			// From WorkflowDispatchParams
-			branch, tag, platforms,
-			editorBuild, editorBuildMono, templateBuild, templateBuildMono,
-			// Shared
-			// TODO: The issue is platforms, which is still a radio field instead of checklist. Adjust platforms to match targetPlatforms
-			// TODO: LTO should also be prompted in the form and a shared value in both interfaces
-			LtoMode, encryptionKey,
-			// From SubmissionData
-			targetPlatforms, buildTarget, additionalFlags, fingerprint
-		} = body as WorkflowDispatchParams & SubmissionData;
+			buildName,
+			godotVersion,
+			encryptionKey,
+			targetPlatforms,
+			buildTarget,
+			additionalFlags,
+			fingerprint
+		} = submissionData;
 
+		// Validate required fields
+		if (!targetPlatforms || targetPlatforms.length === 0) {
+			return NextResponse.json({
+				error: 'At least one target platform is required',
+				status: StatusCodes.BAD_REQUEST
+			});
+		}
 
-		// Github workflow dispatch
+		if (!buildName) {
+			return NextResponse.json({
+				error: 'Build name is required',
+				status: StatusCodes.BAD_REQUEST
+			});
+		}
+
+		// Trigger GitHub workflow dispatch using SubmissionData
 		const { id } = await triggerWorkflow("main", {
-			branch: branch,
-			tag: tag,
-			LtoMode: LtoMode,
+			// Map SubmissionData to workflow dispatch parameters
+			tag: godotVersion,  // Using godotVersion as the tag
 			flags: additionalFlags,
-			platforms: targetPlatforms,
+			platforms: targetPlatforms,  // Map targetPlatforms to platforms for workflow
 			encryptionKey: encryptionKey,
-			editorBuild: editorBuild,
-			editorBuildMono: editorBuildMono,
-			templateBuild: templateBuild,
-			templateBuildMono: templateBuildMono,
+			// Default values for workflow-specific fields
+			branch: "main",
+			editorBuild: true,
+			editorBuildMono: false,
+			templateBuild: true,
+			templateBuildMono: false,
+			LtoMode: "none",  // Default or make configurable in form
 		});
 
 		// Record and save user data in DB
@@ -55,6 +71,7 @@ export async function POST(request: Request) {
 
 		const dbJob = snakecaseKeys(job as unknown as Record<string, unknown>, { deep: true })
 		const { error } = await supabase.from('jobs').insert(dbJob)
+
 		if (error) {
 			console.error('supabase insert error:', error)
 			return NextResponse.json({
@@ -64,20 +81,21 @@ export async function POST(request: Request) {
 		}
 
 		// Build the SCons command
-		console.log(`[BUILD] for ${targetPlatforms.join(', ')}`);
-		console.log(JSON.stringify(job, null, 2))
-		console.log(`[FLAGS] ${buildTarget} ${additionalFlags}`);
+		console.log(`[BUILD] ${buildName} for ${targetPlatforms.join(', ')}`);
+		console.log(`[GODOT] Version: ${godotVersion}`);
+		console.log(`[TARGET] ${buildTarget}`);
+		console.log(`[FLAGS] ${additionalFlags}`);
 		if (encryptionKey) console.log(`[ENCRYPTION] Key provided`);
+		console.log(JSON.stringify(job, null, 2))
 
 		return NextResponse.json(job, { status: StatusCodes.ACCEPTED })
 
 	} catch (error) {
 		console.error("Dispatch error:", error)
 		return NextResponse.json(
-			{ error: "Job not found" },
-			{ status: StatusCodes.NOT_FOUND }
+			{ error: "Failed to dispatch build job" },
+			{ status: StatusCodes.INTERNAL_SERVER_ERROR }
 		)
-
 	}
 }
 
@@ -87,6 +105,7 @@ export async function GET() {
 		.select('*')
 		.order('created_at', { ascending: false })
 		.limit(10)
+
 	if (error) {
 		console.error('Supabase select error: ', error)
 		return Response.json({

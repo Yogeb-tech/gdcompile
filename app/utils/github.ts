@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/rest";
+import { TargetPlatform } from "../types/godot";
 
 export type Branch = {
 	name: string;
@@ -29,7 +30,7 @@ export type WorkflowDispatchParams = {
 	LtoMode: string,
 	flags: string,
 	encryptionKey: string,
-	platforms: string[], // Comma-separated list of platforms to build (ex: windows,web,ios,linux,macos,android)
+	platforms: TargetPlatform['name'][],
 	editorBuild: boolean,
 	editorBuildMono: boolean,
 	templateBuild: boolean,
