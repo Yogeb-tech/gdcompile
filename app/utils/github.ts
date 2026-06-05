@@ -40,7 +40,9 @@ export type WorkflowDispatchParams = {
 // Keep old type alias for compatibility
 export type GodotBranchData = GodotVersionData;
 
-const octokit = new Octokit();
+const octokit = new Octokit({
+	auth: process.env.GITHUB_TOKEN,
+});
 
 export async function fetchGodotBranches(): Promise<Branch[]> {
 	try {
