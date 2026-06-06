@@ -138,7 +138,7 @@ export default function Form({ fingerprint }: FormProps) {
 			const result = await response.json();
 			console.log('Build submitted successfully:', result);
 
-			// Optionally redirect or show success message
+			// HACK: Optionally redirect or show success message
 			alert('Build submitted successfully!');
 
 			// Reset form or redirect as needed
