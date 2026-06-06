@@ -151,7 +151,6 @@ export default function Form({ fingerprint }: FormProps) {
 
 	return (
 		<div className={styles.container}>
-			<h1 className="title">GDCompile</h1>
 			<form onSubmit={handleSubmit}>
 				<div className={styles.formGroup}>
 					<label htmlFor="buildName">Build Name *</label>

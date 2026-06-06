@@ -1,0 +1,54 @@
+.header {
+	background: var(--pico-background-color);
+	justify-content: center;
+	align-items: center;
+	border-bottom: 1px solid var(--pico-muted-border-color);
+	padding: 0.75rem 1rem;
+}
+
+.nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+
+	width: 100%;
+	max-width: 85%;
+	margin: 0 auto;
+	padding: 0 1rem;
+}
+
+.left {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.brand {
+	font-weight: 700;
+	font-size: 1.1rem;
+	letter-spacing: 0.3px;
+}
+
+.links {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.link {
+	font-size: 0.95rem;
+	color: var(--pico-muted-color);
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.link:hover {
+	color: var(--pico-primary);
+}
+
+.right {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}

@@ -4,6 +4,7 @@ import Form from './components/form';
 import { FingerprintProvider, useVisitorData } from '@fingerprint/react';
 import CenteredPage from './components/centeredCard';
 import { JobStatus } from './types/godot';
+import Template from './components/template';
 
 export default function Home() {
 	return (
@@ -55,7 +56,7 @@ function AppContent() {
 		return <AdBlockDetected />;
 	}
 
-	return (
+	const form = (
 		<Form
 			fingerprint={{
 				visitorId: data.visitor_id!,
@@ -63,6 +64,12 @@ function AppContent() {
 				timestamp: new Date().toISOString(),
 			}}
 		/>
+	);
+
+	return (
+		<div>
+			<Template>{form}</Template>
+		</div>
 	);
 }
 
