@@ -1,8 +1,9 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Form from './components/form';
 import { FingerprintProvider, useVisitorData } from '@fingerprint/react';
-import CenteredPage from './components/centeredPage';
+import CenteredPage from './components/centeredCard';
+import { JobStatus } from './types/godot';
 
 export default function Home() {
 	return (
@@ -14,11 +15,39 @@ export default function Home() {
 }
 
 function AppContent() {
+	const [jobs, setJobs] = useState<JobStatus | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
 	const { data, isLoading } = useVisitorData({
 		immediate: true,
 	});
 
-	if (isLoading) {
+	useEffect(() => {
+		if (!data?.visitor_id) return;
+
+		const fetchJobs = async () => {
+			try {
+				setLoading(true);
+				const response = await fetch(`api/dispatch/${data.visitor_id}`);
+				const result = await response.json();
+				if (!response.ok) throw new Error('Failed');
+				setJobs(result.jobs);
+			} catch (err) {
+				const message =
+					err instanceof Error ? err.message : typeof err === 'string' ? err : 'Unknown error';
+
+				setError(message);
+				console.error('Failed to fetch jobs: ', err);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchJobs();
+	}, [data?.visitor_id]);
+
+	if (isLoading || loading) {
 		return <p>Loading...</p>;
 	}
 
