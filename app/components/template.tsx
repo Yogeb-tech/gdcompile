@@ -36,23 +36,29 @@ export default function Template({ children, requireFingerprint = false }: Templ
 		<div className={styles.container}>
 			<header className={styles.header}>
 				<nav className={styles.nav}>
-					<div className={styles.left}>
-						<div className={styles.brand}>GDCompile</div>
-						<div className={styles.links}>
-							<a className={styles.link} href="./">
-								Request Build
-							</a>
-							<a className={styles.link} href="view">
-								Builds
-							</a>
-						</div>
-					</div>
+					<ul>
+						<li>
+							<strong className={styles.brand}>GDCompile</strong>
+						</li>
+						<li>
+							<a href="./">Request Build</a>
+						</li>
+						<li>
+							<a href="/view">Builds</a>
+						</li>
+					</ul>
 
-					<div className={styles.right}>
-						<button>Github</button>
-						<button>Kofi</button>
-						<button>Theme</button>
-					</div>
+					<ul>
+						<li>
+							<button>GitHub</button>
+						</li>
+						<li>
+							<button>Ko-fi</button>
+						</li>
+						<li>
+							<button>Theme</button>
+						</li>
+					</ul>
 				</nav>
 			</header>
 			<main className={styles.content}>

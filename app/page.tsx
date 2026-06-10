@@ -1,6 +1,3 @@
-// app/page.tsx
-'use client';
-import { useVisitorData } from '@fingerprint/react';
 import Form from './components/form';
 
 function HomePage() {
