@@ -1,16 +1,12 @@
+'use client';
 import Form from './components/form';
+import { useVisitorContext } from './components/fingerprintProvider';
 
 function HomePage() {
+	const visitorContext = useVisitorContext();
 	return (
 		<div>
-			<Form
-				// TODO: Pass down fingerprint via context with template
-				fingerprint={{
-					visitorId: '',
-					eventID: '',
-					timestamp: new Date().toISOString(),
-				}}
-			/>
+			<Form fingerprint={visitorContext.fingerprintData} />
 		</div>
 	);
 }
