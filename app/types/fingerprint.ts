@@ -1,6 +1,6 @@
 interface FingerprintData {
-	visitorId: string;
-	requestId: string;
+	visitorId?: string;
+	eventID?: string;
 	timestamp: string;
 }
 

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import '@picocss/pico/css/pico.min.css';
+import { Providers } from './providers';
+import Template from './components/template';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -25,7 +27,11 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-			<body>{children}</body>
+			<body>
+				<Providers>
+					<Template requireFingerprint={true}>{children}</Template>
+				</Providers>
+			</body>
 		</html>
 	);
 }

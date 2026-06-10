@@ -5,16 +5,14 @@ import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
 import { useGodotTags } from '../hooks/useGodotTags';
 
+// TODO: This should be should be its own 'create' route not component
+
 interface FormProps {
 	fingerprint: FingerprintData;
 }
 
 export interface SubmissionData {
-	fingerprint: {
-		visitorId: string | undefined;
-		requestId: string;
-		timestamp: string;
-	};
+	fingerprint: FingerprintData;
 	buildName: string;
 	godotVersion: string;
 	encryptionKey: string;
