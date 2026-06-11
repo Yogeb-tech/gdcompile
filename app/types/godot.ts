@@ -1,6 +1,6 @@
 export type TargetPlatform = {
 	id: number;
-	name: "Windows" | "macOS" | "Linux" | "Android" | "iOS" | "Web";
+	name: 'Windows' | 'macOS' | 'Linux' | 'Android' | 'iOS' | 'Web';
 };
 
 export interface JobStatus {
@@ -12,9 +12,5 @@ export interface JobStatus {
 	downloadUrl?: string;
 	error?: string;
 	targetPlatforms: TargetPlatform['name'][];
-	fingerprint: {
-		visitorId: string | undefined;
-		requestId: string;
-		timestamp: string;
-	};
+	fingerprint: FingerprintData;
 }

@@ -1,5 +1,5 @@
-import { Octokit } from "@octokit/rest";
-import { TargetPlatform } from "../types/godot";
+import { Octokit } from '@octokit/rest';
+import { TargetPlatform } from '../types/godot';
 
 export type Branch = {
 	name: string;
@@ -20,22 +20,22 @@ export type Tag = {
 };
 
 export type GodotVersionData = {
-	name: string;      // tag or branch name
+	name: string; // tag or branch name
 	commitSha: string;
 };
 
 export type WorkflowDispatchParams = {
-	branch: string,
-	tag: string,
-	LtoMode: string,
-	flags: string,
-	encryptionKey: string,
-	platforms: TargetPlatform['name'][],
-	runEditor: boolean,
-	runEditorMono: boolean,
-	runTemplate: boolean,
-	runTemplateMono: boolean
-}
+	branch: string;
+	tag: string;
+	LtoMode: string;
+	flags: string;
+	encryptionKey: string;
+	platforms: TargetPlatform['name'][];
+	runEditor: boolean;
+	runEditorMono: boolean;
+	runTemplate: boolean;
+	runTemplateMono: boolean;
+};
 
 // Keep old type alias for compatibility
 export type GodotBranchData = GodotVersionData;
@@ -47,9 +47,9 @@ const octokit = new Octokit({
 export async function fetchGodotBranches(): Promise<Branch[]> {
 	try {
 		const response = await octokit.repos.listBranches({
-			owner: "godotengine",
-			repo: "godot",
-			per_page: 100
+			owner: 'godotengine',
+			repo: 'godot',
+			per_page: 100,
 		});
 		return response.data;
 	} catch (error: unknown) {
@@ -61,9 +61,9 @@ export async function fetchGodotBranches(): Promise<Branch[]> {
 export async function fetchGodotTags(): Promise<Tag[]> {
 	try {
 		const response = await octokit.repos.listTags({
-			owner: "godotengine",
-			repo: "godot",
-			per_page: 100
+			owner: 'godotengine',
+			repo: 'godot',
+			per_page: 100,
 		});
 		return response.data;
 	} catch (error: unknown) {
@@ -82,12 +82,16 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 			module_flags: params.flags,
 			template_module_flags: '',
 			release_repo: '',
-			lto: params.LtoMode === 'none' ? 'lto=none' :
-				params.LtoMode === 'thin' ? 'lto=thin' : 'lto=full',
+			lto:
+				params.LtoMode === 'none'
+					? 'lto=none'
+					: params.LtoMode === 'thin'
+						? 'lto=thin'
+						: 'lto=full',
 			run_editor: params.runEditor,
 			run_editor_mono: params.runEditorMono,
 			run_template: params.runTemplate,
-			run_template_mono: params.runTemplateMono
+			run_template_mono: params.runTemplateMono,
 		};
 
 		await octokit.rest.actions.createWorkflowDispatch({
@@ -95,19 +99,19 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 			repo: 'action_godot_builder',
 			workflow_id: process.env.WORKFLOW_ID!,
 			ref: branchOrTag,
-			inputs: inputs
+			inputs: inputs,
 		});
 
 		// Wait a moment for workflow to start
-		await new Promise(resolve => setTimeout(resolve, 3000));
+		await new Promise((resolve) => setTimeout(resolve, 3000));
 
 		// Fetch ID from most recent workflow run
 		const { data } = await octokit.rest.actions.listWorkflowRuns({
 			owner: 'Yogeb-tech',
 			repo: 'action_godot_builder',
 			workflow_id: process.env.WORKFLOW_ID!,
-			per_page: 1
-		})
+			per_page: 1,
+		});
 
 		if (data.workflow_runs.length === 0) {
 			throw new Error('No workflow run found after dispatch');
@@ -120,6 +124,7 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 	}
 }
 
+// HACK: This might not be useful. Deprecated?
 export async function getWorkflowStatus(target_run_id: number): Promise<string> {
 	try {
 		const { data } = await octokit.rest.actions.getWorkflowRun({
@@ -141,7 +146,11 @@ export async function getWorkflowStatus(target_run_id: number): Promise<string> 
 
 // Add this function to your existing code
 
-export async function downloadArtifactFromRun(target_run_id: number, artifact_name: string, destinationPath: string) {
+export async function downloadArtifactFromRun(
+	target_run_id: number,
+	artifact_name: string,
+	destinationPath: string
+) {
 	try {
 		// List all artifacts for the specific workflow run
 		const { data: artifactsData } = await octokit.rest.actions.listWorkflowRunArtifacts({
@@ -155,9 +164,11 @@ export async function downloadArtifactFromRun(target_run_id: number, artifact_na
 		}
 
 		// Find the artifact by its name
-		const artifact = artifactsData.artifacts.find(a => a.name === artifact_name);
+		const artifact = artifactsData.artifacts.find((a) => a.name === artifact_name);
 		if (!artifact) {
-			throw new Error(`Artifact with name "${artifact_name}" not found. Found artifacts: ${artifactsData.artifacts.map(a => a.name).join(', ')}`);
+			throw new Error(
+				`Artifact with name "${artifact_name}" not found. Found artifacts: ${artifactsData.artifacts.map((a) => a.name).join(', ')}`
+			);
 		}
 
 		// 3. Use it to get the download URL
@@ -182,10 +193,8 @@ export async function downloadArtifactFromRun(target_run_id: number, artifact_na
 
 		console.log(`Artifact "${artifact_name}" downloaded successfully to ${destinationPath}`);
 		return true;
-
 	} catch (error) {
 		console.error('Error downloading artifact:', error);
 		throw error;
 	}
 }
-

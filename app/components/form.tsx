@@ -247,7 +247,8 @@ export default function Form({ fingerprint }: FormProps) {
 						dlink_enabled should also go here.
 					</small>
 				</div>
-
+				
+				{/*This looks terrible, fix it*/}
 				<fieldset className={styles.platformsGrid}>
 					<legend>Target Platforms * (select one or more)</legend>
 					<div className={styles.platformsContainer}>
