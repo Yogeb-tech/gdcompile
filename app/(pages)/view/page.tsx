@@ -1,10 +1,8 @@
 // TODO: Create view route so users can see their requested/pending/finished builds. Create 1 card  with 1st job from array for now. Use hardcoded visitor_id in db
 'use client';
-import React from 'react';
 import { useJobs } from '../../hooks/useJobs';
 import { useVisitorContext } from '../../components/fingerprintProvider';
 import styles from './page.module.css';
-import { JobStatus } from '../../types/godot';
 
 export default function ViewBuilds() {
 	const visitorContext = useVisitorContext();
@@ -23,11 +21,14 @@ export default function ViewBuilds() {
 		<div>
 			<div className={styles.grid}>
 				<article className={styles.card}>
-					<h2>{job.buildName}</h2>
+					<h4>{job.buildName}</h4>
 					<div>{job.status}</div>
 					<div> {job.targetPlatforms}</div>
-					<div> {job.error}</div>
-					<footer>DownloadFooter</footer>
+					{job.error && <div>{job.error}</div>}
+					<footer>
+						<button>Download</button>
+						<button>Delete</button>
+					</footer>
 				</article>
 			</div>
 		</div>

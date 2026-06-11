@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { JobStatus } from '../types/godot';
+import camelcaseKeys from 'camelcase-keys';
 
 interface UseJobsOptions {
 	visitorId?: string | null;
@@ -11,7 +12,6 @@ interface UseJobsReturn {
 	loading: boolean;
 	error: string | null;
 }
-
 
 // HACK: Refresh support?
 export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJobsReturn {
@@ -29,7 +29,8 @@ export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJo
 				const response = await fetch(`/api/dispatch/${visitorId}`);
 				if (!response.ok) throw new Error('Failed to fetch jobs');
 				const result = await response.json();
-				setJobs(result.jobs);
+				const jobs = camelcaseKeys(result.jobs, { deep: true });
+				setJobs(jobs);
 			} catch (err) {
 				const message = err instanceof Error ? err.message : 'Unknown error';
 				setError(message);
