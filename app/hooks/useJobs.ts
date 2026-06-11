@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { JobStatus } from '../types/godot';
 
 interface UseJobsOptions {
@@ -7,7 +7,7 @@ interface UseJobsOptions {
 }
 
 interface UseJobsReturn {
-	jobs: JobStatus | null;
+	jobs: JobStatus[] | null;
 	loading: boolean;
 	error: string | null;
 }
@@ -15,7 +15,7 @@ interface UseJobsReturn {
 
 // HACK: Refresh support?
 export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJobsReturn {
-	const [jobs, setJobs] = useState<JobStatus | null>(null);
+	const [jobs, setJobs] = useState<JobStatus[] | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 

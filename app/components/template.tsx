@@ -1,6 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import { useVisitorData } from '@fingerprint/react';
 import styles from './template.module.css';
 
@@ -12,22 +11,32 @@ interface TemplateProps {
 }
 
 export default function Template({ children, requireFingerprint = false }: TemplateProps) {
-	const router = useRouter();
-	const { data, isLoading } = useVisitorData({ immediate: true });
+	const { data, isLoading, error } = useVisitorData({ immediate: true });
 
-	// Handle adblock redirect
-	useEffect(() => {
-		if (requireFingerprint && !isLoading && !data) {
-			router.push('/adblock-detected');
-		}
-	}, [requireFingerprint, isLoading, data, router]);
+	// Derived values – no state, no useEffect
+	const adblockDetected = requireFingerprint && !isLoading && (!data || error);
+	const isLoadingFingerprint = requireFingerprint && isLoading;
 
 	// Loading state
-	if (requireFingerprint && isLoading) {
+	if (isLoadingFingerprint) {
 		return <div className={styles.container}>Loading...</div>;
 	}
 
-	// Don't render if fingerprint required but missing
+	// Adblock detected (derived)
+	if (adblockDetected) {
+		return (
+			<div className={styles.container}>
+				<header className={styles.header}>...</header>
+				<main>
+					<h1>Adblocker Detected</h1>
+					<p>Please disable your adblocker to use GDCompile.</p>
+				</main>
+				<footer>...</footer>
+			</div>
+		);
+	}
+
+	// If fingerprint required but missing (should be covered above, but fallback)
 	if (requireFingerprint && !data) {
 		return null;
 	}
