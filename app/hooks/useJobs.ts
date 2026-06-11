@@ -29,8 +29,7 @@ export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJo
 				const response = await fetch(`/api/dispatch/${visitorId}`);
 				if (!response.ok) throw new Error('Failed to fetch jobs');
 				const result = await response.json();
-				const jobs = camelcaseKeys(result.jobs, { deep: true });
-				setJobs(jobs);
+				setJobs(result.jobs);
 			} catch (err) {
 				const message = err instanceof Error ? err.message : 'Unknown error';
 				setError(message);

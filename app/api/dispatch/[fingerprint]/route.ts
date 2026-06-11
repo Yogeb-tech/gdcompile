@@ -1,27 +1,27 @@
-import { createClient } from "@supabase/supabase-js";
-import { StatusCodes } from "http-status-codes";
-import { NextResponse } from "next/server";
+import { createClient } from '@supabase/supabase-js';
+import camelcaseKeys from 'camelcase-keys';
+import { StatusCodes } from 'http-status-codes';
+import { NextResponse } from 'next/server';
 
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL!,
 	process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-)
+);
 
 export async function GET(
 	request: Request,
-	{ params }: { params: Promise<{ fingerprint: string }> },
+	{ params }: { params: Promise<{ fingerprint: string }> }
 ) {
 	try {
 		const { fingerprint } = await params;
 
-
-		const { data: jobs, error } = await supabase
+		const { data: rawJobs, error } = await supabase
 			.from('jobs')
 			.select('*')
 			.eq('fingerprint->>visitor_id', fingerprint);
 
-		console.log(`[FINGERPRINT] ${fingerprint}`)
-		console.log(`[DATA] ${JSON.stringify(jobs, null, 2)}`)
+		console.log(`[FINGERPRINT] ${fingerprint}`);
+		console.log(`[DATA] ${JSON.stringify(rawJobs, null, 2)}`);
 
 		if (error) {
 			console.error('Supabase error:', error);
@@ -31,8 +31,9 @@ export async function GET(
 			);
 		}
 
+		// Must be converted to match interface
+		const jobs = camelcaseKeys(rawJobs, { deep: true });
 		return NextResponse.json({ jobs }, { status: StatusCodes.OK });
-
 	} catch (error) {
 		console.error('Unexpected error:', error);
 		return NextResponse.json(
