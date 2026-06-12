@@ -42,3 +42,14 @@ body {
 		color-scheme: dark;
 	}
 }
+
+.error-text {
+	color: var(--pico-del-color);
+	font-size: var(--pico-font-size-small);
+	padding: 0.5rem 0.5rem;
+	margin-top: 0.5rem;
+	border-left: 3px solid var(--pico-del-color);
+	border-right: 3px solid var(--pico-del-color);
+	border-radius: var(--pico-border-radius);
+	line-height: 1.25;
+}

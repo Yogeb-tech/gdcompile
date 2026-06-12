@@ -170,7 +170,7 @@ export default function Form({ fingerprint }: FormProps) {
 						{tagsLoading ? (
 							<p>Loading Versions...</p>
 						) : tagsError ? (
-							<p>Error loading tags</p>
+							<p className="error">Error loading tags</p>
 						) : (
 							<select
 								name="godotVersion"
@@ -247,8 +247,8 @@ export default function Form({ fingerprint }: FormProps) {
 						dlink_enabled should also go here.
 					</small>
 				</div>
-				
-				{/*This looks terrible, fix it*/}
+
+				{/*TODO: This looks terrible, fix it*/}
 				<fieldset className={styles.platformsGrid}>
 					<legend>Target Platforms * (select one or more)</legend>
 					<div className={styles.platformsContainer}>
