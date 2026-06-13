@@ -10,7 +10,7 @@ export function useGodotTags() {
 		async function fetchTags() {
 			try {
 				const data = await fetchGodotTags();
-				// Optional: sort tags semantically (stable > rc > beta, core version)
+				// HACK: sort tags semantically (stable > rc > beta, core version)
 				// For now, just use as returned (alphabetical)
 				setTags(data);
 			} catch (err) {

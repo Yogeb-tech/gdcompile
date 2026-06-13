@@ -28,8 +28,8 @@ export default function ViewBuilds() {
 						<th scope="col">Build Name</th>
 						<th scope="col">Status</th>
 						<th scope="col">Target Platforms</th>
-						<th scope="col">Download</th>
-						<th scope="col">Delete</th>
+						<th scope="col"></th>
+						<th scope="col"></th>
 					</tr>
 				</thead>
 

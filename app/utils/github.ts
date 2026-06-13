@@ -72,6 +72,16 @@ export async function fetchGodotTags(): Promise<Tag[]> {
 	}
 }
 
+export async function fetchGodotLatestTag(): Promise<Tag> {
+	try {
+		const tags = await fetchGodotTags();
+		return tags[0];
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : String(error);
+		throw new Error(`API Error: ${message || 'UNKNOWN'}`);
+	}
+}
+
 export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispatchParams) {
 	try {
 		const inputs = {
