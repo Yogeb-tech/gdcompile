@@ -1,5 +1,3 @@
-// TODO: After this add delete endpoint
-// TODO: Then configure RLS in supabase
 import { createClient } from '@supabase/supabase-js';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
