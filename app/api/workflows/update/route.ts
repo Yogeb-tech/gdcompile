@@ -1,7 +1,3 @@
-// TODO: Create update post request to update status from github webhooks
-// TODO: Adjust routing to be more RESTful
-//		 /workflows/{workflow_id} - GET or DELETE a workflow
-// 		 /workflows - POST: create a new workflow
 // TODO: After this add delete endpoint
 // TODO: Then configure RLS in supabase
 import { createClient } from '@supabase/supabase-js';
