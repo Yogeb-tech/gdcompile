@@ -8,6 +8,7 @@ import { JobStatus } from '@/app/types/godot';
 // TODO: Download button must properly download artifcats from github
 // TODO: Delete button must properly delete from db atleast (maybe from workflow aswell)
 // TODO: Then configure RLS in supabase
+// TODO: Remove the timer on the form, I think its unnecessary?
 export default function ViewBuilds() {
 	const visitorContext = useVisitorContext();
 	const { jobs, loading, error } = useJobs({
@@ -16,8 +17,6 @@ export default function ViewBuilds() {
 	});
 
 	if (!jobs || jobs.length === 0) return <div>No jobs found</div>;
-
-	const job = jobs[0];
 
 	if (loading) return <div>Loading…</div>;
 	if (error) return <div>Error: {error}</div>;
