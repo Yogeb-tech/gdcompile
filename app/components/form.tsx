@@ -123,7 +123,7 @@ export default function Form({ fingerprint }: FormProps) {
 			console.log('SUBMISSION WITH FINGERPRINT:\n' + JSON.stringify(submissionData, null, 2));
 
 			// Make dispatch api call
-			const response = await fetch('/api/dispatch', {
+			const response = await fetch('/api/workflows', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(submissionData),

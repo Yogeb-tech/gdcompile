@@ -26,7 +26,7 @@ export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJo
 			try {
 				setLoading(true);
 				setError(null);
-				const response = await fetch(`/api/dispatch/${visitorId}`);
+				const response = await fetch(`/api/workflows/fingerprint/${visitorId}`);
 				if (!response.ok) throw new Error('Failed to fetch jobs');
 				const result = await response.json();
 				setJobs(result.jobs);
