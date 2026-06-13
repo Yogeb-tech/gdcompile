@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
+
 interface GitHubWebhookPayload {
 	action: string;
 	workflow_job: {
@@ -24,6 +25,7 @@ interface GitHubWebhookPayload {
 		name: string;
 	};
 }
+
 const supabase = createClient(
 	process.env.NEXT_PUBLIC_SUPABASE_URL!,
 	process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
@@ -35,10 +37,7 @@ export async function POST(request: Request) {
 		const githubPayload = body as GitHubWebhookPayload;
 		console.log('Request body:', githubPayload);
 		console.log('Request headers:', Object.fromEntries(request.headers.entries()));
-		return NextResponse.json(
-			{ message: 'Webhook Received' },
-			{ status: StatusCodes.INTERNAL_SERVER_ERROR }
-		);
+		return NextResponse.json({ message: 'Webhook Received' }, { status: StatusCodes.OK });
 	} catch (error) {
 		console.error('Update error:', error);
 		return NextResponse.json(
