@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 		if (error) {
 			console.error('supabase update error:', error);
 			return NextResponse.json({
-				error: `Failed to alter job: ${githubPayload.workflow_job.id}`,
+				error: `Failed to alter job`,
 				status: StatusCodes.INTERNAL_SERVER_ERROR,
 			});
 		}
