@@ -154,9 +154,15 @@ export async function getWorkflowStatus(target_run_id: number): Promise<string> 
 	}
 }
 
-export async function getArtifactDownloadUrl(target_run_id: number, artifact_name: string) {
+export type ArtifactDownloadInfo = {
+	name: string;
+	url: string;
+};
+
+export async function getAllArtifactDownloadUrls(
+	target_run_id: number
+): Promise<ArtifactDownloadInfo[]> {
 	try {
-		// List all artifacts for the specific workflow run
 		const { data: artifactsData } = await octokit.rest.actions.listWorkflowRunArtifacts({
 			owner: 'Yogeb-tech',
 			repo: 'action_godot_builder',
@@ -167,26 +173,27 @@ export async function getArtifactDownloadUrl(target_run_id: number, artifact_nam
 			throw new Error(`No artifacts found for run ID ${target_run_id}`);
 		}
 
-		// Find the artifact by its name
-		const artifact = artifactsData.artifacts.find((a) => a.name === artifact_name);
-		if (!artifact) {
-			throw new Error(
-				`Artifact with name "${artifact_name}" not found. Found artifacts: ${artifactsData.artifacts.map((a) => a.name).join(', ')}`
-			);
-		}
+		// Map through ALL artifacts and request a download URL for each concurrently
+		const downloadUrlPromises = artifactsData.artifacts.map(async (artifact) => {
+			const downloadResponse = await octokit.rest.actions.downloadArtifact({
+				owner: 'Yogeb-tech',
+				repo: 'action_godot_builder',
+				artifact_id: artifact.id,
+				archive_format: 'zip',
+			});
 
-		// Use it to get the download URL
-		const downloadResponse = await octokit.rest.actions.downloadArtifact({
-			owner: 'Yogeb-tech',
-			repo: 'action_godot_builder',
-			artifact_id: artifact.id,
-			archive_format: 'zip', // As per documentation, this must be 'zip'
+			return {
+				name: artifact.name,
+				url: downloadResponse.url,
+			};
 		});
 
-		console.log(`Artifact "${artifact_name}". URL ${downloadResponse.url}`);
-		return downloadResponse.url;
+		// Resolve all requests in parallel
+		const allArtifacts = await Promise.all(downloadUrlPromises);
+
+		return allArtifacts;
 	} catch (error) {
-		console.error('Error downloading artifact:', error);
+		console.error('Error fetching all artifact URLs:', error);
 		throw error;
 	}
 }

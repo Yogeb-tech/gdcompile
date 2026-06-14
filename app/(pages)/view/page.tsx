@@ -2,13 +2,14 @@
 import { useJobs } from '../../hooks/useJobs';
 import { useVisitorContext } from '../../components/fingerprintProvider';
 import { JobStatus } from '@/app/types/godot';
+import { useState } from 'react';
+import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 
-// TODO: Download button must properly download artifcats from github
-// TODO: Gray out download button when status is not completed
 // TODO: Delete button must properly delete from db atleast (maybe from workflow aswell)
 // TODO: Then configure RLS in supabase
 // TODO: Remove the timer on the form, I think its unnecessary?
 // TODO: Polish. make table look nice, add icons, etc
+
 export default function ViewBuilds() {
 	const visitorContext = useVisitorContext();
 	const { jobs, loading, error } = useJobs({
@@ -50,11 +51,34 @@ function BuildRow({ job }: { job: JobStatus }) {
 			<td>{job.status}</td>
 			<td>{job.targetPlatforms}</td>
 			<td>
-				<button type="button">Download</button>
+				<DownloadAllButton runId={job.id} />
 			</td>
 			<td>
 				<button type="button">Delete</button>
 			</td>
 		</tr>
+	);
+}
+
+function DownloadAllButton({ runId }: { runId: number }) {
+	const [isLoading, setIsLoading] = useState(false);
+
+	const handleDownloadAll = async () => {
+		setIsLoading(true);
+		try {
+			await downloadAllWorkflowArtifacts(runId);
+		} catch (error) {
+			console.error('Download trigger failed: ', error);
+			alert('Could not start download. Please check your network or try again.');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return (
+		<button type="button" onClick={handleDownloadAll} disabled={isLoading}>
+			{/* TODO: replace with icons download and loading) */}
+			{isLoading ? 'Downloading...' : 'Download'}
+		</button>
 	);
 }

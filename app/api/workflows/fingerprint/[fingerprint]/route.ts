@@ -20,8 +20,8 @@ export async function GET(
 			.select('*')
 			.eq('fingerprint->>visitor_id', fingerprint);
 
-		console.log(`[FINGERPRINT] ${fingerprint}`);
-		console.log(`[DATA] ${JSON.stringify(rawJobs, null, 2)}`);
+		console.log(`[API]  ${fingerprint}`);
+		console.log(`[API]  ${JSON.stringify(rawJobs, null, 2)}`);
 
 		if (error) {
 			console.error('Supabase error:', error);

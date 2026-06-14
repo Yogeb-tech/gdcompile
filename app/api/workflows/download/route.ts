@@ -1,27 +1,29 @@
 // app/api/download/route.ts
 import { NextResponse } from 'next/server';
-import { getArtifactDownloadUrl } from '@/app/utils/github';
+import { getAllArtifactDownloadUrls } from '@/app/utils/github';
 import { StatusCodes } from 'http-status-codes';
 
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url);
 	const runId = searchParams.get('runId');
-	const artifactName = searchParams.get('name');
 
-	if (!runId || !artifactName) {
-		return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+	if (!runId) {
+		return NextResponse.json(
+			{ error: 'Missing runId parameter' },
+			{ status: StatusCodes.BAD_REQUEST }
+		);
 	}
 
 	try {
-		const downloadUrl = await getArtifactDownloadUrl(parseInt(runId), artifactName);
+		const artifacts = await getAllArtifactDownloadUrls(parseInt(runId));
 
-		return NextResponse.redirect(downloadUrl, {
-			status: StatusCodes.TEMPORARY_REDIRECT,
-		});
+		// Return urls as a JSON array instead of redirecting
+		console.log(`[API] Successfully fetched ${artifacts.length} artifact URLs for runId: ${runId}`);
+		return NextResponse.json({ artifacts }, { status: StatusCodes.OK });
 	} catch (error) {
 		console.error('Download request error: ', error);
 		return NextResponse.json(
-			{ error: 'Download request error' },
+			{ error: 'Failed to generate download links' },
 			{ status: StatusCodes.INTERNAL_SERVER_ERROR }
 		);
 	}

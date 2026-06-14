@@ -34,8 +34,8 @@ export async function POST(request: Request) {
 		const body = await request.json();
 		const githubPayload = body as GitHubWebhookPayload;
 
-		console.log('Request body:', githubPayload);
-		console.log('Request headers:', Object.fromEntries(request.headers.entries()));
+		console.log('[API] Request body:', githubPayload);
+		console.log('[API] Request headers:', Object.fromEntries(request.headers.entries()));
 
 		const { error } = await supabase
 			.from('jobs')
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 			.eq('id', Number(githubPayload.workflow_job.run_id));
 
 		if (error) {
-			console.error('supabase update error:', error);
+			console.error('[API] supabase update error:', error);
 			return NextResponse.json({
 				error: `Failed to alter job`,
 				status: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
 		return NextResponse.json({ message: 'Webhook Received' }, { status: StatusCodes.OK });
 	} catch (error) {
-		console.error('Update error:', error);
+		console.error('[API] Update error:', error);
 		return NextResponse.json(
 			{ error: 'Failed to dispatch build job' },
 			{ status: StatusCodes.INTERNAL_SERVER_ERROR }
