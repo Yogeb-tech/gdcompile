@@ -3,12 +3,12 @@ import { useJobs } from '../../hooks/useJobs';
 import { useVisitorContext } from '../../components/fingerprintProvider';
 import { JobStatus } from '@/app/types/godot';
 
-// TODO: Create view route so users can see their requested/pending/finished builds. Create 1 card  with 1st job from array for now. Use hardcoded visitor_id in db
-// TODO: Make sure status updates in real time, also include failure to status types if it isn't there already
 // TODO: Download button must properly download artifcats from github
+// TODO: Gray out download button when status is not completed
 // TODO: Delete button must properly delete from db atleast (maybe from workflow aswell)
 // TODO: Then configure RLS in supabase
 // TODO: Remove the timer on the form, I think its unnecessary?
+// TODO: Polish. make table look nice, add icons, etc
 export default function ViewBuilds() {
 	const visitorContext = useVisitorContext();
 	const { jobs, loading, error } = useJobs({

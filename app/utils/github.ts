@@ -154,13 +154,7 @@ export async function getWorkflowStatus(target_run_id: number): Promise<string> 
 	}
 }
 
-// Add this function to your existing code
-
-export async function downloadArtifactFromRun(
-	target_run_id: number,
-	artifact_name: string,
-	destinationPath: string
-) {
+export async function getArtifactDownloadUrl(target_run_id: number, artifact_name: string) {
 	try {
 		// List all artifacts for the specific workflow run
 		const { data: artifactsData } = await octokit.rest.actions.listWorkflowRunArtifacts({
@@ -181,7 +175,7 @@ export async function downloadArtifactFromRun(
 			);
 		}
 
-		// 3. Use it to get the download URL
+		// Use it to get the download URL
 		const downloadResponse = await octokit.rest.actions.downloadArtifact({
 			owner: 'Yogeb-tech',
 			repo: 'action_godot_builder',
@@ -189,20 +183,8 @@ export async function downloadArtifactFromRun(
 			archive_format: 'zip', // As per documentation, this must be 'zip'
 		});
 
-		// The downloadArtifact method returns a response with a `url` property.
-		const artifactUrl = downloadResponse.url;
-
-		// Download and save the file
-		const fileResponse = await fetch(artifactUrl);
-		if (!fileResponse.ok) {
-			throw new Error(`Failed to download artifact: ${fileResponse.statusText}`);
-		}
-
-		const fileBuffer = await fileResponse.arrayBuffer();
-		// TODO: You need to fetch this URL to get the actual file stream. Save `fileBuffer` to `destinationPath` using fs.writeFileSync or similar
-
-		console.log(`Artifact "${artifact_name}" downloaded successfully to ${destinationPath}`);
-		return true;
+		console.log(`Artifact "${artifact_name}". URL ${downloadResponse.url}`);
+		return downloadResponse.url;
 	} catch (error) {
 		console.error('Error downloading artifact:', error);
 		throw error;
