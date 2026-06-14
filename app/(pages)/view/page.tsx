@@ -8,7 +8,7 @@ import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 // TODO: Delete button must properly delete from db atleast (maybe from workflow aswell)
 // TODO: Then configure RLS in supabase
 // TODO: Remove the timer on the form, I think its unnecessary?
-// TODO: Polish. make table look nice, add icons, etc
+// TODO: Polish. make table look nice, add icons (tabler/icons), etc
 
 export default function ViewBuilds() {
 	const visitorContext = useVisitorContext();

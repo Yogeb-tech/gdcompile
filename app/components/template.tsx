@@ -2,6 +2,8 @@
 import React from 'react';
 import { useVisitorData } from '@fingerprint/react';
 import styles from './template.module.css';
+import { IconSun } from '@tabler/icons-react';
+import { SiGithub, SiKofi } from 'react-icons/si';
 
 // TODO: Pass down fingerprint via context
 
@@ -59,13 +61,22 @@ export default function Template({ children, requireFingerprint = false }: Templ
 
 					<ul>
 						<li>
-							<button>GitHub</button>
+							{/*TODO: Add links to me stuff here. Also add theme toggle support*/}
+							<a href="https://github.com" aria-label="GitHub">
+								<SiGithub size={24} />
+							</a>
 						</li>
 						<li>
-							<button>Ko-fi</button>
+							<a href="https://ko-fi.com" aria-label="Ko-fi">
+								<SiKofi size={28} />
+							</a>
 						</li>
 						<li>
-							<button>Theme</button>
+							<li>
+								<button>
+									<IconSun size={24} />
+								</button>
+							</li>
 						</li>
 					</ul>
 				</nav>
