@@ -4,6 +4,7 @@ import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
 import { useGodotTags } from '../hooks/useGodotTags';
+import { useRouter } from 'next/navigation';
 
 // TODO: This should be should be its own 'create' route not component
 
@@ -41,6 +42,7 @@ const platforms: TargetPlatform[] = [
 ];
 
 export default function Form({ fingerprint }: FormProps) {
+	const router = useRouter();
 	const { tags, loading: tagsLoading, error: tagsError } = useGodotTags();
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
 
@@ -53,6 +55,8 @@ export default function Form({ fingerprint }: FormProps) {
 		LtoMode: 'none',
 		additionalFlags: '',
 	});
+
+	const [isSubmitting, setIsSumbitting] = useState<boolean>(false);
 
 	const hasInitialized = useRef(false);
 
@@ -102,6 +106,7 @@ export default function Form({ fingerprint }: FormProps) {
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
+		setIsSumbitting(true);
 		// Validate required fields
 		if (!formData.buildName.trim()) {
 			alert('Please enter a build name');
@@ -136,14 +141,14 @@ export default function Form({ fingerprint }: FormProps) {
 			const result = await response.json();
 			console.log('Build submitted successfully:', result);
 
-			// HACK: Optionally redirect or show success message
-			alert('Build submitted successfully!');
-
-			// Reset form or redirect as needed
-			// router.push(`/builds/${result.jobId}`);
+			await alert('Build submitted successfully!');
+			// Redirect to view builds page
+			router.push(`/view`);
 		} catch (error) {
 			console.error('Submission failed:', error);
 			alert('Failed to submit. Please try again.');
+		} finally {
+			setIsSumbitting(false);
 		}
 	}
 
@@ -271,7 +276,9 @@ export default function Form({ fingerprint }: FormProps) {
 					)}
 				</fieldset>
 
-				<button type="submit">Generate Build</button>
+				<button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+					{isSubmitting ? 'Generating...' : 'Generate Build'}
+				</button>
 			</form>
 		</div>
 	);

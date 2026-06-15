@@ -6,8 +6,7 @@ import { useState } from 'react';
 import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 import { IconDownload, IconTrash } from '@tabler/icons-react';
 
-// TODO: Delete button must properly delete from db atleast (maybe from workflow aswell)
-// TODO: Remove the timer on the form, I think its unnecessary?
+// TODO: Remove the timer on the form submission, I think its unnecessary?
 // TODO: Then configure RLS in supabase
 // TODO: Polish. make table look nice, add icons (tabler/icons), etc
 // TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
@@ -79,8 +78,14 @@ function DownloadAllButton({ runId }: { runId: number }) {
 	};
 
 	return (
-		<button className="outline" type="button" onClick={handleDownloadAll} disabled={isLoading}>
-			{isLoading ? <article aria-busy="true"></article> : <IconDownload />}
+		<button
+			className="outline"
+			type="button"
+			onClick={handleDownloadAll}
+			disabled={isLoading}
+			aria-busy={isLoading}
+		>
+			{!isLoading && <IconDownload />}
 		</button>
 	);
 }
@@ -104,8 +109,14 @@ function DeleteButton({ runId }: { runId: number }) {
 	};
 
 	return (
-		<button className="outline secondary" type="button" onClick={handleDelete} disabled={isLoading}>
-			{isLoading ? <article aria-busy="true"></article> : <IconTrash />}
+		<button
+			className="outline secondary"
+			type="button"
+			onClick={handleDelete}
+			disabled={isLoading}
+			aria-busy={isLoading}
+		>
+			{!isLoading && <IconTrash />}
 		</button>
 	);
 }
