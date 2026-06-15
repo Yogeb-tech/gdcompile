@@ -1,3 +1,4 @@
+import { deleteAllArtifactsForRun, deleteWorkflowRunAndArtifacts } from '@/app/utils/github';
 import { createClient } from '@supabase/supabase-js';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
@@ -13,6 +14,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
 		console.log('Request ID: ', id);
 
+		// Delete from db
 		const { error } = await supabase.from('jobs').delete().eq('id', Number(id));
 
 		if (error) {
@@ -22,6 +24,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 				status: StatusCodes.INTERNAL_SERVER_ERROR,
 			});
 		}
+
+		// Delete artifact from workflows
+		await deleteWorkflowRunAndArtifacts(Number(id));
 
 		return NextResponse.json({ message: 'Job deleted successfully' }, { status: StatusCodes.OK });
 	} catch (error) {

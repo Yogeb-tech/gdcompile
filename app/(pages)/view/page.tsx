@@ -6,9 +6,10 @@ import { useState } from 'react';
 import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 
 // TODO: Delete button must properly delete from db atleast (maybe from workflow aswell)
-// TODO: Then configure RLS in supabase
 // TODO: Remove the timer on the form, I think its unnecessary?
+// TODO: Then configure RLS in supabase
 // TODO: Polish. make table look nice, add icons (tabler/icons), etc
+// TODO: Add landing page (no fingerprint check, notify users about fingerprint check), move form to /form route (add custom layout) to address no fingerprint requirement
 
 export default function ViewBuilds() {
 	const visitorContext = useVisitorContext();
@@ -79,6 +80,31 @@ function DownloadAllButton({ runId }: { runId: number }) {
 		<button type="button" onClick={handleDownloadAll} disabled={isLoading}>
 			{/* TODO: replace with icons download and loading) */}
 			{isLoading ? 'Downloading...' : 'Download'}
+		</button>
+	);
+}
+
+function DeleteButton({ runId }: { runId: number }) {
+	const [isLoading, setIsLoading] = useState(false);
+
+	const handleDownloadAll = async () => {
+		setIsLoading(true);
+		try {
+			await fetch(`/api/workflows/${runId}`, {
+				method: 'DELETE',
+			});
+		} catch (error) {
+			console.error('Delete trigger failed: ', error);
+			alert('Could not delete workflow. Please check your network or try again.');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return (
+		<button type="button" onClick={handleDownloadAll} disabled={isLoading}>
+			{/* TODO: replace with icons download and loading) */}
+			{isLoading ? 'Deleting...' : 'Delete'}
 		</button>
 	);
 }

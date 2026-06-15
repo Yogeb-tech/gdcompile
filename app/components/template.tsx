@@ -5,7 +5,7 @@ import styles from './template.module.css';
 import { IconSun } from '@tabler/icons-react';
 import { SiGithub, SiKofi } from 'react-icons/si';
 
-// TODO: Pass down fingerprint via context
+// TODO: Improve footer styling, its way to low in height and should linger across maybe
 
 interface TemplateProps {
 	children: React.ReactNode;

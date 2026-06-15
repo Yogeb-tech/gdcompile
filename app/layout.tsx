@@ -23,14 +23,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
 	children,
+	requireFingerprint = true,
 }: Readonly<{
 	children: React.ReactNode;
+	requireFingerprint?: boolean;
 }>) {
 	return (
 		<html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
 			<body>
 				<Providers>
-					<Template requireFingerprint={true}>{children}</Template>
+					<Template requireFingerprint={requireFingerprint}>{children}</Template>
 				</Providers>
 			</body>
 		</html>

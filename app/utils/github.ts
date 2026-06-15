@@ -44,6 +44,9 @@ const octokit = new Octokit({
 	auth: process.env.GITHUB_TOKEN,
 });
 
+export const MY_ORG = 'Yogeb-tech';
+export const MY_REPO = 'action_godot_builder';
+
 export async function fetchGodotBranches(): Promise<Branch[]> {
 	try {
 		const response = await octokit.repos.listBranches({
@@ -105,7 +108,7 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 		};
 
 		await octokit.rest.actions.createWorkflowDispatch({
-			owner: 'Yogeb-tech',
+			owner: MY_ORG,
 			repo: 'action_godot_builder',
 			workflow_id: process.env.WORKFLOW_ID!,
 			ref: branchOrTag,
@@ -117,7 +120,7 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 
 		// Fetch ID from most recent workflow run
 		const { data } = await octokit.rest.actions.listWorkflowRuns({
-			owner: 'Yogeb-tech',
+			owner: MY_ORG,
 			repo: 'action_godot_builder',
 			workflow_id: process.env.WORKFLOW_ID!,
 			per_page: 1,
@@ -138,8 +141,8 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 export async function getWorkflowStatus(target_run_id: number): Promise<string> {
 	try {
 		const { data } = await octokit.rest.actions.getWorkflowRun({
-			owner: 'Yogeb-tech',
-			repo: 'action_godot_builder',
+			owner: MY_ORG,
+			repo: MY_REPO,
 			run_id: target_run_id,
 		});
 
@@ -164,8 +167,8 @@ export async function getAllArtifactDownloadUrls(
 ): Promise<ArtifactDownloadInfo[]> {
 	try {
 		const { data: artifactsData } = await octokit.rest.actions.listWorkflowRunArtifacts({
-			owner: 'Yogeb-tech',
-			repo: 'action_godot_builder',
+			owner: MY_ORG,
+			repo: MY_REPO,
 			run_id: target_run_id,
 		});
 
@@ -176,8 +179,8 @@ export async function getAllArtifactDownloadUrls(
 		// Map through ALL artifacts and request a download URL for each concurrently
 		const downloadUrlPromises = artifactsData.artifacts.map(async (artifact) => {
 			const downloadResponse = await octokit.rest.actions.downloadArtifact({
-				owner: 'Yogeb-tech',
-				repo: 'action_godot_builder',
+				owner: MY_ORG,
+				repo: MY_REPO,
 				artifact_id: artifact.id,
 				archive_format: 'zip',
 			});
@@ -194,6 +197,71 @@ export async function getAllArtifactDownloadUrls(
 		return allArtifacts;
 	} catch (error) {
 		console.error('Error fetching all artifact URLs:', error);
+		throw error;
+	}
+}
+
+export async function deleteWorkflowRunAndArtifacts(target_run_id: number) {
+	try {
+		await deleteAllArtifactsForRun(target_run_id);
+		await deleteWorkflowRun(target_run_id);
+	} catch (error) {
+		console.error('Error deleteing workflow and artifacts: ', error);
+		throw error;
+	}
+}
+
+export async function deleteWorkflowRun(target_run_id: number) {
+	try {
+		await octokit.rest.actions.deleteWorkflowRun({
+			owner: MY_ORG,
+			repo: MY_REPO,
+			run_id: target_run_id,
+		});
+		console.log(`Deleted workflow run ${target_run_id}`);
+	} catch (error) {
+		console.error('Error deleting workflow: ', error);
+		throw error;
+	}
+}
+
+export async function deleteAllArtifactsForRun(target_run_id: number) {
+	try {
+		const { data: artifactsData } = await octokit.rest.actions.listWorkflowRunArtifacts({
+			owner: MY_ORG,
+			repo: MY_REPO,
+			run_id: target_run_id,
+		});
+
+		if (artifactsData.artifacts.length === 0) {
+			console.log(`No artifacts found for run ID ${target_run_id}.`);
+			return;
+		}
+
+		await Promise.all(
+			artifactsData.artifacts.map((artifact) =>
+				deleteArtifact(artifact.id).catch((e) => {
+					console.error(`Failed to delete artifact ${artifact.id}:`, e);
+					return null; // Continue even if one fails
+				})
+			)
+		);
+		console.log(`Deleted artifacts for workflow run ${target_run_id}`);
+	} catch (error) {
+		console.error('Error deleteing all artifacts: ', error);
+		throw error;
+	}
+}
+
+export async function deleteArtifact(target_artifact_id: number) {
+	try {
+		await octokit.rest.actions.deleteArtifact({
+			owner: MY_ORG,
+			repo: MY_REPO,
+			artifact_id: target_artifact_id,
+		});
+	} catch (error) {
+		console.error('Error deleting artifact: ', error);
 		throw error;
 	}
 }
