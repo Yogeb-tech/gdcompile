@@ -2,7 +2,7 @@
 import React from 'react';
 import { useVisitorData } from '@fingerprint/react';
 import styles from './template.module.css';
-import { IconMoon, IconSun } from '@tabler/icons-react';
+import { IconMoon } from '@tabler/icons-react';
 import { SiGithub, SiKofi } from 'react-icons/si';
 
 // TODO: Improve footer styling, its way to low in height and should linger across maybe

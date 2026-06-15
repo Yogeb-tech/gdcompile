@@ -1,3 +1,5 @@
+import { FingerprintData } from './fingerprint';
+
 export type TargetPlatform = {
 	id: number;
 	name: 'Windows' | 'macOS' | 'Linux' | 'Android' | 'iOS' | 'Web';
