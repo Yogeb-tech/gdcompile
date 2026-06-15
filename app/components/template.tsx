@@ -2,7 +2,7 @@
 import React from 'react';
 import { useVisitorData } from '@fingerprint/react';
 import styles from './template.module.css';
-import { IconSun } from '@tabler/icons-react';
+import { IconMoon, IconSun } from '@tabler/icons-react';
 import { SiGithub, SiKofi } from 'react-icons/si';
 
 // TODO: Improve footer styling, its way to low in height and should linger across maybe
@@ -62,21 +62,20 @@ export default function Template({ children, requireFingerprint = false }: Templ
 					<ul>
 						<li>
 							{/*TODO: Add links to me stuff here. Also add theme toggle support*/}
-							<a href="https://github.com" aria-label="GitHub">
+							<a href="https://github.com" aria-label="GitHub" className="contrast">
 								<SiGithub size={24} />
 							</a>
 						</li>
 						<li>
-							<a href="https://ko-fi.com" aria-label="Ko-fi">
+							<a href="https://ko-fi.com" aria-label="Ko-fi" className="contrast">
 								<SiKofi size={28} />
 							</a>
 						</li>
 						<li>
-							<li>
-								<button>
-									<IconSun size={24} />
-								</button>
-							</li>
+							{/*TODO: Add theme switch (probably create hook) */}
+							<a href="#" className="contrast">
+								<IconMoon size={24} />
+							</a>
 						</li>
 					</ul>
 				</nav>

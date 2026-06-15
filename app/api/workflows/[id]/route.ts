@@ -1,4 +1,4 @@
-import { deleteAllArtifactsForRun, deleteWorkflowRunAndArtifacts } from '@/app/utils/github';
+import { deleteWorkflowRunAndArtifacts } from '@/app/utils/github';
 import { createClient } from '@supabase/supabase-js';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
@@ -12,7 +12,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 	try {
 		const { id } = await params;
 
-		console.log('Request ID: ', id);
+		console.log('[API] Request ID: ', id);
 
 		// Delete from db
 		const { error } = await supabase.from('jobs').delete().eq('id', Number(id));

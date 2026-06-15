@@ -4,7 +4,6 @@ import './globals.css';
 import '@picocss/pico/css/pico.min.css';
 import { Providers } from './providers';
 import Template from './components/template';
-import { VisitorProvider } from './components/fingerprintProvider';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
