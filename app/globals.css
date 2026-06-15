@@ -51,3 +51,13 @@ body {
 	border-radius: var(--pico-border-radius);
 }
 
+button.outline.btn-red {
+	/* Base state colors */
+	--pico-color: #d93526;
+	--pico-border-color: #d93526;
+
+	/* Hover & Focus state colors */
+	--pico-hover-color: #ffffff;
+	--pico-hover-background-color: #b91c1c;
+	--pico-hover-border-color: #b91c1c;
+}

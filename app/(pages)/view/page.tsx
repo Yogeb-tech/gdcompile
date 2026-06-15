@@ -110,7 +110,7 @@ function DeleteButton({ runId }: { runId: number }) {
 
 	return (
 		<button
-			className="outline secondary"
+			className="outline btn-red"
 			type="button"
 			onClick={handleDelete}
 			disabled={isLoading}
