@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseAdmin } from '@/app/utils/supabaseCache';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
 
@@ -24,10 +24,7 @@ interface GitHubWebhookPayload {
 	};
 }
 
-const supabase = createClient(
-	process.env.NEXT_PUBLIC_SUPABASE_URL!,
-	process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
+const supabase = getSupabaseAdmin();
 
 export async function POST(request: Request) {
 	try {

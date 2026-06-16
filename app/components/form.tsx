@@ -5,6 +5,7 @@ import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
 import { useGodotTags } from '../hooks/useGodotTags';
 import { useRouter } from 'next/navigation';
+import { FingerprintData } from '../types/fingerprint';
 
 // TODO: This should be should be its own 'create' route not component
 

@@ -1,15 +1,12 @@
 import { JobStatus } from '@/app/types/godot';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import snakecaseKeys from 'snakecase-keys';
 import { triggerWorkflow } from '@/app/utils/github';
 import { SubmissionData } from '@/app/components/form';
+import { getSupabaseAdmin } from '@/app/utils/supabaseCache';
 
-const supabase = createClient(
-	process.env.NEXT_PUBLIC_SUPABASE_URL!,
-	process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
+const supabase = getSupabaseAdmin();
 
 export async function POST(request: Request) {
 	try {
