@@ -2,6 +2,7 @@
 
 import { useVisitorData } from '@fingerprint/react';
 import { createContext, ReactNode, useContext } from 'react';
+import { FingerprintData } from '../types/fingerprint';
 
 interface VisitorContextType {
 	fingerprintData: FingerprintData;

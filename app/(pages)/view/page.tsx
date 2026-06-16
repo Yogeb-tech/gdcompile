@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 import { IconDownload, IconTrash } from '@tabler/icons-react';
 
-// TODO: Remove the timer on the form submission, I think its unnecessary?
 // TODO: Then configure RLS in supabase
 // TODO: Polish. make table look nice, add icons (tabler/icons), etc
 // TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
