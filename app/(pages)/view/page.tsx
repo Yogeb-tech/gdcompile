@@ -99,7 +99,8 @@ function DeleteButton({ runId }: { runId: number }) {
 			await fetch(`/api/workflows/${runId}`, {
 				method: 'DELETE',
 			});
-			onDelete(runId);
+			// Reload the page to reflect the deletion
+			window.location.reload();
 		} catch (error) {
 			console.error('Delete trigger failed: ', error);
 			alert('Could not delete workflow. Please check your network or try again.');
@@ -120,6 +121,3 @@ function DeleteButton({ runId }: { runId: number }) {
 		</button>
 	);
 }
-
-// TODO: Finish this function to delete table row in real time
-function onDelete(runId: number) {}
