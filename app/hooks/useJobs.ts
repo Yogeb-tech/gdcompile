@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { JobStatus } from '../types/godot';
-import camelcaseKeys from 'camelcase-keys';
 
 interface UseJobsOptions {
 	visitorId?: string | null;

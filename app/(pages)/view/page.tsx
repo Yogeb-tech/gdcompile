@@ -10,6 +10,7 @@ import { capitalCase } from 'change-case';
 // TODO: Polish. make table look nice, make form look nice add icons (tabler/icons), add more error css where appropriate, etc
 // TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
 // TODO: Add landing page (no fingerprint check, notify users about fingerprint check and experimental status), move form to /form route (add custom layout) to address no fingerprint requirement
+// TODO: Make sure release dropdown menu properly recoginizes build target release, editor, both
 
 export default function ViewBuilds() {
 	const visitorContext = useVisitorContext();

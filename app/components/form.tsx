@@ -107,7 +107,6 @@ export default function Form({ fingerprint }: FormProps) {
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
-		setIsSumbitting(true);
 		// Validate required fields
 		if (!formData.buildName.trim()) {
 			alert('Please enter a build name');
@@ -118,6 +117,7 @@ export default function Form({ fingerprint }: FormProps) {
 			alert('Please select at least one target platform');
 			return;
 		}
+		setIsSumbitting(true);
 
 		try {
 			// Combine form with fingerprint
@@ -219,8 +219,9 @@ export default function Form({ fingerprint }: FormProps) {
 						onChange={handleFormChange}
 						value={formData.buildTarget}
 					>
-						<option value="template_release">Release (Optimized)</option>
-						<option value="template_debug">Debug (With debug symbols)</option>
+						<option value="template_release">Release</option>
+						<option value="template_debug">Editor</option>
+						<option value="template_both">Editor & Release</option>
 					</select>
 				</div>
 
@@ -255,8 +256,17 @@ export default function Form({ fingerprint }: FormProps) {
 				</div>
 
 				{/*TODO: This looks terrible, fix it*/}
+
 				<fieldset className={styles.platformsGrid}>
 					<legend>Target Platforms * (select one or more)</legend>
+					<input
+						type="checkbox"
+						name="targetPlatforms"
+						required
+						className={styles.hiddenRequired}
+						checked={formData.targetPlatforms.length > 0}
+						onChange={() => {}}
+					/>
 					<div className={styles.platformsContainer}>
 						{platforms.map((platform) => (
 							<div key={platform.id} className={styles.platformOption}>
@@ -273,7 +283,7 @@ export default function Form({ fingerprint }: FormProps) {
 						))}
 					</div>
 					{formData.targetPlatforms.length === 0 && (
-						<small className={styles.errorText}>Please select at least one platform</small>
+						<small className="error-text">Please select at least one platform</small>
 					)}
 				</fieldset>
 
