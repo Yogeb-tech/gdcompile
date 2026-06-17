@@ -6,6 +6,7 @@ import { TargetPlatform } from '../types/godot';
 import { useGodotTags } from '../hooks/useGodotTags';
 import { useRouter } from 'next/navigation';
 import { FingerprintData } from '../types/fingerprint';
+import { useKey } from '../hooks/useKey';
 
 // TODO: This should be should be its own 'create' route not component
 
@@ -43,6 +44,7 @@ const platforms: TargetPlatform[] = [
 ];
 
 export default function Form({ fingerprint }: FormProps) {
+	const { key, generateAESKey } = useKey();
 	const router = useRouter();
 	const { tags, loading: tagsLoading, error: tagsError } = useGodotTags();
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
@@ -154,7 +156,7 @@ export default function Form({ fingerprint }: FormProps) {
 	}
 
 	return (
-		<div className={styles.container}>
+		<div>
 			<form onSubmit={handleSubmit}>
 				<div className={styles.formGroup}>
 					<label htmlFor="buildName">Build Name *</label>
@@ -199,7 +201,28 @@ export default function Form({ fingerprint }: FormProps) {
 				</div>
 
 				<div className={styles.formGroup}>
-					<label htmlFor="encryptionKey">Encryption Key (Optional)</label>
+					<div
+						style={{
+							display: 'flex',
+							alignItems: 'baseline',
+							gap: 12,
+							alignContent: 'space-between',
+						}}
+					>
+						<label htmlFor="encryptionKey">Encryption Key (Optional)</label>
+
+						<a
+							onClick={async () => {
+								const generated = await generateAESKey();
+								const raw = await crypto.subtle.exportKey('raw', generated);
+								const b64 = btoa(String.fromCharCode(...new Uint8Array(raw)));
+								setFormData((prev) => ({ ...prev, encryptionKey: b64 }));
+							}}
+							className="secondary"
+						>
+							Generate Key
+						</a>
+					</div>
 					<input
 						type="text"
 						name="encryptionKey"
@@ -208,7 +231,9 @@ export default function Form({ fingerprint }: FormProps) {
 						value={formData.encryptionKey}
 						placeholder="Your encryption key here"
 					/>
-					<small>Leave empty if not using encryption</small>
+					<small>
+						Leave empty if not using encryption. Make sure you store this somewhere safe.
+					</small>
 				</div>
 
 				<div className={styles.formGroup}>
@@ -240,7 +265,7 @@ export default function Form({ fingerprint }: FormProps) {
 				</div>
 
 				<div className={styles.formGroup}>
-					<label htmlFor="additionalFlags">Additional SCons Flags</label>
+					<label htmlFor="additionalFlags">Additional SCons Flags (Optional)</label>
 					<input
 						type="text"
 						name="additionalFlags"

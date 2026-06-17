@@ -78,7 +78,7 @@ export default function Template({ children, requireFingerprint = false }: Templ
 							</a>
 						</li>
 						<li>
-							<a href="" className="contrast" onClick={toggleTheme}>
+							<a className="contrast" onClick={toggleTheme}>
 								<IconMoon size={24} />
 							</a>
 						</li>
