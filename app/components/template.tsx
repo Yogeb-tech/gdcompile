@@ -4,6 +4,7 @@ import { useVisitorData } from '@fingerprint/react';
 import styles from './template.module.css';
 import { IconMoon } from '@tabler/icons-react';
 import { SiGithub, SiKofi } from 'react-icons/si';
+import { useTheme } from '../hooks/useTheme';
 
 // TODO: Improve footer styling, its way to low in height and should linger across maybe
 
@@ -14,6 +15,8 @@ interface TemplateProps {
 
 export default function Template({ children, requireFingerprint = false }: TemplateProps) {
 	const { data, isLoading, error } = useVisitorData({ immediate: true });
+
+	const { toggleTheme } = useTheme();
 
 	// Derived values – no state, no useEffect
 	const adblockDetected = requireFingerprint && !isLoading && (!data || error);
@@ -61,31 +64,38 @@ export default function Template({ children, requireFingerprint = false }: Templ
 
 					<ul>
 						<li>
-							{/*TODO: Add links to me stuff here. Also add theme toggle support*/}
-							<a href="https://github.com" aria-label="GitHub" className="contrast">
+							<a
+								href="https://github.com/Yogeb-tech/gdcompile"
+								aria-label="GitHub"
+								className="contrast"
+							>
 								<SiGithub size={24} />
 							</a>
 						</li>
 						<li>
-							<a href="https://ko-fi.com" aria-label="Ko-fi" className="contrast">
+							<a href="https://ko-fi.com/yogeb" aria-label="Ko-fi" className="contrast">
 								<SiKofi size={28} />
 							</a>
 						</li>
 						<li>
-							{/*TODO: Add theme switch (probably create hook) */}
-							<a href="#" className="contrast">
+							<a href="" className="contrast" onClick={toggleTheme}>
 								<IconMoon size={24} />
 							</a>
 						</li>
 					</ul>
 				</nav>
 			</header>
-			<main className={styles.content}>
-				{/* HACK: Pass fingerprint to children if needed */}
-				{children}
-			</main>
-			<footer>
-				<p className={styles.footer}>2026 My Website. MIT License.</p>
+			<main className={styles.content}>{children}</main>
+			<footer className={styles.footer}>
+				<div>
+					<p>
+						2026{' '}
+						<a className="contrast" href="https://github.com/Yogeb-tech">
+							Yogeb-tech
+						</a>
+						. MIT License.
+					</p>
+				</div>
 			</footer>
 		</div>
 	);

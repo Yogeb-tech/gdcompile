@@ -8,7 +8,7 @@ export type TargetPlatform = {
 export interface JobStatus {
 	id: number;
 	buildName: string;
-	status: 'queued' | 'building' | 'completed' | 'failed';
+	status: string;
 	createdAt: string;
 	completedAt?: string;
 	downloadUrl?: string;

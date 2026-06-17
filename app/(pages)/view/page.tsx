@@ -7,7 +7,7 @@ import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 import { IconDownload, IconTrash } from '@tabler/icons-react';
 import { capitalCase } from 'change-case';
 
-// TODO: Polish. make table look nice, make form look nice add icons (tabler/icons), add more error css where appropriate, etc
+// TODO: Add links to proper pages
 // TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
 // TODO: Add landing page (no fingerprint check, notify users about fingerprint check and experimental status), move form to /form route (add custom layout) to address no fingerprint requirement
 // TODO: Make sure release dropdown menu properly recoginizes build target release, editor, both
@@ -50,7 +50,7 @@ function BuildRow({ job }: { job: JobStatus }) {
 	return (
 		<tr>
 			<th scope="row">{job.buildName}</th>
-			<td>{capitalCase(job.status)}</td>
+			<td className={job.status === 'failure' ? 'error-text' : ''}>{capitalCase(job.status)}</td>
 			<td>{targetPlatformDisplayString(job)}</td>
 			<td>
 				<DownloadAllButton runId={job.id} />
