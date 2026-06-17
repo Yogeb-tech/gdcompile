@@ -2,11 +2,9 @@
 import React from 'react';
 import { useVisitorData } from '@fingerprint/react';
 import styles from './template.module.css';
-import { IconMoon } from '@tabler/icons-react';
+import { IconMoon, IconSun } from '@tabler/icons-react';
 import { SiGithub, SiKofi } from 'react-icons/si';
 import { useTheme } from '../hooks/useTheme';
-
-// TODO: Improve footer styling, its way to low in height and should linger across maybe
 
 interface TemplateProps {
 	children: React.ReactNode;
@@ -16,7 +14,7 @@ interface TemplateProps {
 export default function Template({ children, requireFingerprint = false }: TemplateProps) {
 	const { data, isLoading, error } = useVisitorData({ immediate: true });
 
-	const { toggleTheme } = useTheme();
+	const { theme, toggleTheme } = useTheme();
 
 	// Derived values – no state, no useEffect
 	const adblockDetected = requireFingerprint && !isLoading && (!data || error);
@@ -79,7 +77,7 @@ export default function Template({ children, requireFingerprint = false }: Templ
 						</li>
 						<li>
 							<a className="contrast" onClick={toggleTheme}>
-								<IconMoon size={24} />
+								{theme === 'dark' ? <IconMoon size={24} /> : <IconSun />}
 							</a>
 						</li>
 					</ul>

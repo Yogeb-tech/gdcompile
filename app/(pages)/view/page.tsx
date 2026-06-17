@@ -7,7 +7,6 @@ import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 import { IconDownload, IconTrash } from '@tabler/icons-react';
 import { capitalCase } from 'change-case';
 
-// TODO: Add links to proper pages
 // TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
 // TODO: Add landing page (no fingerprint check, notify users about fingerprint check and experimental status), move form to /form route (add custom layout) to address no fingerprint requirement
 // TODO: Make sure release dropdown menu properly recoginizes build target release, editor, both
