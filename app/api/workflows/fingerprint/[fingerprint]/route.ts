@@ -29,7 +29,14 @@ export async function GET(
 		}
 
 		// Must be converted to match interface
-		const jobs = camelcaseKeys(rawJobs, { deep: true });
+		const jobs = camelcaseKeys(rawJobs, { deep: true }).map((job) => ({
+			...job,
+			targetPlatforms:
+				typeof job.targetPlatforms === 'string'
+					? JSON.parse(job.targetPlatforms)
+					: job.targetPlatforms,
+		}));
+
 		return NextResponse.json({ jobs }, { status: StatusCodes.OK });
 	} catch (error) {
 		console.error('Unexpected error:', error);

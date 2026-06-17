@@ -1,14 +1,15 @@
 'use client';
 import { useJobs } from '../../hooks/useJobs';
 import { useVisitorContext } from '../../components/fingerprintProvider';
-import { JobStatus } from '@/app/types/godot';
+import { JobStatus, targetPlatformDisplayString } from '@/app/types/godot';
 import { useState } from 'react';
 import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 import { IconDownload, IconTrash } from '@tabler/icons-react';
+import { capitalCase } from 'change-case';
 
-// TODO: Polish. make table look nice, add icons (tabler/icons), etc
+// TODO: Polish. make table look nice, make form look nice add icons (tabler/icons), add more error css where appropriate, etc
 // TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
-// TODO: Add landing page (no fingerprint check, notify users about fingerprint check), move form to /form route (add custom layout) to address no fingerprint requirement
+// TODO: Add landing page (no fingerprint check, notify users about fingerprint check and experimental status), move form to /form route (add custom layout) to address no fingerprint requirement
 
 export default function ViewBuilds() {
 	const visitorContext = useVisitorContext();
@@ -48,8 +49,8 @@ function BuildRow({ job }: { job: JobStatus }) {
 	return (
 		<tr>
 			<th scope="row">{job.buildName}</th>
-			<td>{job.status}</td>
-			<td>{job.targetPlatforms}</td>
+			<td>{capitalCase(job.status)}</td>
+			<td>{targetPlatformDisplayString(job)}</td>
 			<td>
 				<DownloadAllButton runId={job.id} />
 			</td>

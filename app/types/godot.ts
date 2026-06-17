@@ -16,3 +16,8 @@ export interface JobStatus {
 	targetPlatforms: TargetPlatform['name'][];
 	fingerprint: FingerprintData;
 }
+
+export function targetPlatformDisplayString(job: JobStatus): string {
+	const text = job.targetPlatforms.join(', ');
+	return text;
+}
