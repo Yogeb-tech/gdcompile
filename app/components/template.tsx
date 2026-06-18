@@ -28,15 +28,11 @@ export default function Template({ children, requireFingerprint = false }: Templ
 	// Adblock detected (derived)
 	if (adblockDetected) {
 		return (
-			<div className={styles.container}>
-				<div className="error-text">
-					<header className={styles.header}>...</header>
-					<main>
-						<h1>Adblocker Detected</h1>
-						<p>Please disable your adblocker to use GDCompile.</p>
-					</main>
-					<footer>...</footer>
-				</div>
+			<div className={styles.adblock_container}>
+				<main className={styles.adblock_card}>
+					<h1>Adblocker Detected</h1>
+					<p>Please disable your adblocker to use GDCompile.</p>
+				</main>
 			</div>
 		);
 	}
@@ -59,6 +55,11 @@ export default function Template({ children, requireFingerprint = false }: Templ
 						</li>
 						<li>
 							<a href="/view">Builds</a>
+						</li>
+						<li>
+							<a href="/privacy-policy" className="">
+								Privacy Policy
+							</a>
 						</li>
 					</ul>
 

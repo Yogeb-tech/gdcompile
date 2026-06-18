@@ -78,3 +78,19 @@
 	padding-top: 1rem;
 	border-top: 1px solid var(--pico-muted-border-color);
 }
+
+.adblock_container {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #0f172a;
+}
+
+.adblock_card {
+	background: #1e293b;
+	color: white;
+	padding: 2rem;
+	border-radius: 12px;
+	text-align: center;
+}
