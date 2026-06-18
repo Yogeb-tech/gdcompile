@@ -1,34 +1,49 @@
 'use client';
 
 import { useVisitorData } from '@fingerprint/react';
-import { createContext, ReactNode, useContext } from 'react';
-import { FingerprintData } from '../types/fingerprint';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
+import { createFingerprintData, FingerprintData } from '../types/fingerprint';
 
 interface VisitorContextType {
-	fingerprintData: FingerprintData;
+	fingerprintData: FingerprintData | null;
 	isLoading: boolean;
-	error?: Error;
+	error: Error | null;
+	retry: () => Promise<void>;
 }
 
 const VisitorContext = createContext<VisitorContextType | undefined>(undefined);
 
-// Provider component that uses the hook
 export function VisitorProvider({ children }: { children: ReactNode }) {
-	const { data, isLoading, error } = useVisitorData();
-	const fingerprintData: FingerprintData = {
-		visitorId: data?.visitor_id,
-		eventId: data?.event_id,
-		timestamp: new Date().toISOString(),
-	};
+	const { data, isLoading, error, getData } = useVisitorData();
 
-	return (
-		<VisitorContext.Provider value={{ fingerprintData, isLoading, error }}>
-			{children}
-		</VisitorContext.Provider>
+	const fingerprintData = useMemo(() => {
+		if (!data) return null;
+		try {
+			return createFingerprintData(data);
+		} catch {
+			return null;
+		}
+	}, [data]);
+
+	const retry = useMemo(() => {
+		return async () => {
+			await getData();
+		};
+	}, [getData]);
+
+	const contextValue = useMemo(
+		() => ({
+			fingerprintData,
+			isLoading,
+			error: error || null,
+			retry,
+		}),
+		[fingerprintData, isLoading, error, retry]
 	);
+
+	return <VisitorContext.Provider value={contextValue}>{children}</VisitorContext.Provider>;
 }
 
-// Custom hook for consuming the context (safe version)
 export function useVisitorContext() {
 	const context = useContext(VisitorContext);
 	if (context === undefined) {

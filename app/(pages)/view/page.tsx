@@ -8,20 +8,25 @@ import { IconDownload, IconTrash } from '@tabler/icons-react';
 import { capitalCase } from 'change-case';
 
 // TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
-// TODO: Add landing page (no fingerprint check, notify users about fingerprint check and experimental status), move form to /form route (add custom layout) to address no fingerprint requirement
-// TODO: Make sure release dropdown menu properly recoginizes build target release, editor, both
+// TODO: Add RLS to supabase
+// TODO: Add landing page. No fingerprint check, notify users about fingerprint check (privacy policy) and experimental status.
+// TODO: Move form to /form route (add custom layout) to address no fingerprint requirement
+// TODO: Add delete data endpoint and delete data button to template, redirect to landing page
+// TODO: Make sure release dropdown menu properly recoginizes build target release, editor, both. Also add mono checkbox flag
+// TODO: Builds should expire in a month, check action_godot_builder -> finish project
 
 export default function ViewBuilds() {
-	const visitorContext = useVisitorContext();
+	const { fingerprintData } = useVisitorContext();
+
 	const { jobs, loading, error } = useJobs({
-		visitorId: visitorContext.fingerprintData.visitorId,
-		skip: !visitorContext.fingerprintData.visitorId,
+		visitorId: fingerprintData?.hash ?? undefined,
+		skip: fingerprintData === null || fingerprintData.hash === null,
 	});
 
+	if (loading) return <div>Loading…</div>;
+	if (error) return <div className="error-text">Error: {error}</div>;
 	if (!jobs || jobs.length === 0) return <div>No jobs found</div>;
 
-	if (loading) return <div>Loading…</div>;
-	if (error) return <div>Error: {error}</div>;
 	return (
 		<div>
 			<table>

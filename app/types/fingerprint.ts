@@ -1,18 +1,22 @@
 import { useVisitorData } from '@fingerprint/react';
+import { hashData, verifyData } from '../utils/security';
 
 export interface FingerprintData {
-	visitorId?: string;
-	eventId?: string;
-	timestamp: string;
+	hash: string;
 }
 
-type VisitorData = ReturnType<typeof useVisitorData>['data'];
+type VisitorData = NonNullable<ReturnType<typeof useVisitorData>['data']>;
 
-// TODO: Use this across codebase
-export function toFingerprintData(data: VisitorData | undefined): FingerprintData {
+export function createFingerprintData(data: VisitorData): FingerprintData | null {
+	if (!data.visitor_id) {
+		return null;
+	}
+
 	return {
-		visitorId: data?.visitor_id,
-		eventId: data?.event_id,
-		timestamp: new Date().toISOString(),
+		hash: hashData(data.visitor_id),
 	};
+}
+
+export function verifyFingerprintData(data: FingerprintData, expectedHash: string): boolean {
+	return verifyData(data.hash, expectedHash);
 }

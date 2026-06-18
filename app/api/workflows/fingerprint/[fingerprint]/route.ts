@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from '@/app/utils/supabaseCache';
+import { getSupabaseAdmin } from '@/app/utils/supabase';
 import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
@@ -11,13 +11,13 @@ export async function GET(
 ) {
 	try {
 		const { fingerprint } = await params;
+		console.log(`[API]  ${fingerprint}`);
 
 		const { data: rawJobs, error } = await supabase
 			.from('jobs')
 			.select('*')
-			.eq('fingerprint->>visitor_id', fingerprint);
+			.eq('fingerprint->>hash', fingerprint);
 
-		console.log(`[API]  ${fingerprint}`);
 		console.log(`[API]  ${JSON.stringify(rawJobs, null, 2)}`);
 
 		if (error) {

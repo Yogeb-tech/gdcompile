@@ -1,5 +1,5 @@
 import { deleteWorkflowRunAndArtifacts } from '@/app/utils/github';
-import { getSupabaseAdmin } from '@/app/utils/supabaseCache';
+import { getSupabaseAdmin } from '@/app/utils/supabase';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
 

@@ -7,12 +7,9 @@ import { useGodotTags } from '../hooks/useGodotTags';
 import { useRouter } from 'next/navigation';
 import { FingerprintData } from '../types/fingerprint';
 import { useKey } from '../hooks/useKey';
+import { useVisitorContext } from './fingerprintProvider';
 
 // TODO: This should be should be its own 'create' route not component
-
-interface FormProps {
-	fingerprint: FingerprintData;
-}
 
 export interface SubmissionData {
 	fingerprint: FingerprintData;
@@ -43,8 +40,9 @@ const platforms: TargetPlatform[] = [
 	{ id: 6, name: 'Web' },
 ];
 
-export default function Form({ fingerprint }: FormProps) {
-	const { key, generateAESKey } = useKey();
+export default function Form() {
+	const { fingerprintData: fingerprint } = useVisitorContext();
+	const { generateAESKey } = useKey();
 	const router = useRouter();
 	const { tags, loading: tagsLoading, error: tagsError } = useGodotTags();
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
@@ -125,7 +123,7 @@ export default function Form({ fingerprint }: FormProps) {
 			// Combine form with fingerprint
 			const submissionData: SubmissionData = {
 				...formData,
-				fingerprint: fingerprint,
+				fingerprint: fingerprint!,
 			};
 
 			console.log('SUBMISSION WITH FINGERPRINT:\n' + JSON.stringify(submissionData, null, 2));
@@ -310,7 +308,7 @@ export default function Form({ fingerprint }: FormProps) {
 					)}
 				</fieldset>
 
-				<button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+				<button type="submit" disabled={isSubmitting || !fingerprint} aria-busy={isSubmitting}>
 					{isSubmitting ? 'Generating...' : 'Generate Build'}
 				</button>
 			</form>

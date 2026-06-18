@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
-import { useVisitorData } from '@fingerprint/react';
 import styles from './template.module.css';
 import { IconMoon, IconSun } from '@tabler/icons-react';
 import { SiGithub, SiKofi } from 'react-icons/si';
 import { useTheme } from '../hooks/useTheme';
+import { useVisitorContext } from './fingerprintProvider';
 
 interface TemplateProps {
 	children: React.ReactNode;
@@ -12,12 +12,12 @@ interface TemplateProps {
 }
 
 export default function Template({ children, requireFingerprint = false }: TemplateProps) {
-	const { data, isLoading, error } = useVisitorData({ immediate: true });
+	const { fingerprintData, isLoading, error } = useVisitorContext();
 
 	const { theme, toggleTheme } = useTheme();
 
 	// Derived values – no state, no useEffect
-	const adblockDetected = requireFingerprint && !isLoading && (!data || error);
+	const adblockDetected = requireFingerprint && !isLoading && (!fingerprintData || error);
 	const isLoadingFingerprint = requireFingerprint && isLoading;
 
 	// Loading state
@@ -29,18 +29,20 @@ export default function Template({ children, requireFingerprint = false }: Templ
 	if (adblockDetected) {
 		return (
 			<div className={styles.container}>
-				<header className={styles.header}>...</header>
-				<main>
-					<h1>Adblocker Detected</h1>
-					<p>Please disable your adblocker to use GDCompile.</p>
-				</main>
-				<footer>...</footer>
+				<div className="error-text">
+					<header className={styles.header}>...</header>
+					<main>
+						<h1>Adblocker Detected</h1>
+						<p>Please disable your adblocker to use GDCompile.</p>
+					</main>
+					<footer>...</footer>
+				</div>
 			</div>
 		);
 	}
 
 	// If fingerprint required but missing (should be covered above, but fallback)
-	if (requireFingerprint && !data) {
+	if (requireFingerprint && !fingerprintData) {
 		return null;
 	}
 

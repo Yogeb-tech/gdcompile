@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import snakecaseKeys from 'snakecase-keys';
 import { triggerWorkflow } from '@/app/utils/github';
 import { SubmissionData } from '@/app/components/form';
-import { getSupabaseAdmin } from '@/app/utils/supabaseCache';
+import { getSupabaseAdmin } from '@/app/utils/supabase';
 
 const supabase = getSupabaseAdmin();
 
