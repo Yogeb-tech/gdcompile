@@ -30,8 +30,18 @@ export default function Template({ children, requireFingerprint = false }: Templ
 		return (
 			<div className={styles.adblock_container}>
 				<main className={styles.adblock_card}>
-					<h1>Adblocker Detected</h1>
-					<p>Please disable your adblocker to use GDCompile.</p>
+					<h2>Unable to Continue</h2>
+					<p>
+						This website is having trouble verifying your browser.
+						<br />
+						Please disable any adblockers and try again.
+					</p>
+					<p className={styles.secondary_text}>
+						<a href="/privacy-policy">Privacy Policy</a>
+					</p>
+					<button onClick={() => window.location.reload()} className={styles.refresh_button}>
+						Refresh
+					</button>
 				</main>
 			</div>
 		);
