@@ -9,8 +9,6 @@ import { FingerprintData } from '../types/fingerprint';
 import { useKey } from '../hooks/useKey';
 import { useVisitorContext } from './fingerprintProvider';
 
-// TODO: This should be should be its own 'create' route not component
-
 export interface SubmissionData {
 	fingerprint: FingerprintData;
 	buildName: string;

@@ -8,10 +8,6 @@ import { IconDownload, IconTrash } from '@tabler/icons-react';
 import { capitalCase } from 'change-case';
 
 // TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
-// TODO: Add RLS to supabase
-// TODO: Add landing page. No fingerprint check, notify users about fingerprint check (privacy policy) and experimental status.
-// TODO: Move form to /form route (add custom layout) to address no fingerprint requirement
-// TODO: Add delete data endpoint and delete data button to template, redirect to landing page
 // TODO: Make sure release dropdown menu properly recoginizes build target release, editor, both. Also add mono checkbox flag
 // TODO: Builds should expire in a month, check action_godot_builder -> finish project
 
