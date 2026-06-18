@@ -1,27 +1,22 @@
 import { useState } from 'react';
 
-interface useKeyReturn {
-	key: CryptoKey | null;
-	generateAESKey: () => Promise<CryptoKey>;
-}
-
-export function useKey(): useKeyReturn {
+export function useKey() {
 	const [key, setKey] = useState<CryptoKey | null>(null);
 
 	const generateAESKey = async () => {
-		try {
-			const generatedKey = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, [
-				'encrypt',
-				'decrypt',
-			]);
-			console.log('Generated CryptoKey Object:', generatedKey);
-			setKey(generatedKey);
-			return generatedKey;
-		} catch (error) {
-			console.error('Could not generate key: ', error);
-			throw error;
-		}
+		const k = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, [
+			'encrypt',
+			'decrypt',
+		]);
+
+		setKey(k as CryptoKey);
+		return k as CryptoKey;
 	};
 
-	return { key, generateAESKey };
+	const exportBase64 = async (cryptoKey: CryptoKey) => {
+		const raw = await crypto.subtle.exportKey('raw', cryptoKey);
+		return btoa(String.fromCharCode(...new Uint8Array(raw)));
+	};
+
+	return { key, generateAESKey, exportBase64 };
 }

@@ -40,7 +40,7 @@ const platforms: TargetPlatform[] = [
 
 export default function Form() {
 	const { fingerprintData: fingerprint } = useVisitorContext();
-	const { generateAESKey } = useKey();
+	const { exportBase64, generateAESKey } = useKey();
 	const router = useRouter();
 	const { tags, loading: tagsLoading, error: tagsError } = useGodotTags();
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
@@ -209,9 +209,7 @@ export default function Form() {
 
 						<a
 							onClick={async () => {
-								const generated = await generateAESKey();
-								const raw = await crypto.subtle.exportKey('raw', generated);
-								const b64 = btoa(String.fromCharCode(...new Uint8Array(raw)));
+								const b64 = await exportBase64(await generateAESKey());
 								setFormData((prev) => ({ ...prev, encryptionKey: b64 }));
 							}}
 							className="secondary"
