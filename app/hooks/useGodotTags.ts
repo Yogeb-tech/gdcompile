@@ -10,8 +10,6 @@ export function useGodotTags() {
 		async function fetchTags() {
 			try {
 				const data = await fetchGodotTags();
-				// HACK: sort tags semantically (stable > rc > beta, core version)
-				// For now, just use as returned (alphabetical)
 				setTags(data);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'Failed to load tags');
@@ -23,4 +21,13 @@ export function useGodotTags() {
 	}, []);
 
 	return { tags, loading, error };
+}
+
+export function useGodot4Tags() {
+	const result = useGodotTags();
+
+	return {
+		...result,
+		tags: result.tags.filter((tag) => /^4\.\d+(\.\d+)?/.test(tag.name)),
+	};
 }

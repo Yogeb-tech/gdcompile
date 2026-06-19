@@ -27,7 +27,7 @@ export type GodotVersionData = {
 export type WorkflowDispatchParams = {
 	branch: string;
 	tag: string;
-	LtoMode: string;
+	ltoMode: string;
 	flags: string;
 	encryptionKey: string;
 	platforms: TargetPlatform['name'][];
@@ -96,9 +96,9 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 			template_module_flags: '',
 			release_repo: '',
 			lto:
-				params.LtoMode === 'none'
+				params.ltoMode === 'none'
 					? 'lto=none'
-					: params.LtoMode === 'thin'
+					: params.ltoMode === 'thin'
 						? 'lto=thin'
 						: 'lto=full',
 			run_editor: params.runEditor,

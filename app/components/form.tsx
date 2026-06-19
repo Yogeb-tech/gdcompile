@@ -3,9 +3,9 @@ import camelCase from 'camelcase';
 import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
-import { useGodotTags } from '../hooks/useGodotTags';
+import { useGodot4Tags } from '../hooks/useGodotTags';
 import { useRouter } from 'next/navigation';
-import { FingerprintData } from '../types/fingerprint';
+import { EMPTY_FINGERPRINT, FingerprintData } from '../types/fingerprint';
 import { useKey } from '../hooks/useKey';
 import { useVisitorContext } from './fingerprintProvider';
 
@@ -15,16 +15,6 @@ export interface SubmissionData {
 	godotVersion: string;
 	encryptionKey: string;
 	targetPlatforms: TargetPlatform['name'][];
-	buildTarget: 'template_release' | 'template_debug';
-	additionalFlags: string;
-}
-
-interface GodotFlags {
-	buildName: string;
-	godotVersion: string;
-	encryptionKey: string;
-	targetPlatforms: TargetPlatform['name'][];
-	LtoMode: 'none' | 'thin' | 'full';
 	buildTarget: 'template_release' | 'template_debug';
 	additionalFlags: string;
 }
@@ -42,16 +32,16 @@ export default function Form() {
 	const { fingerprintData: fingerprint } = useVisitorContext();
 	const { exportBase64, generateAESKey } = useKey();
 	const router = useRouter();
-	const { tags, loading: tagsLoading, error: tagsError } = useGodotTags();
+	const { tags, loading: tagsLoading, error: tagsError } = useGodot4Tags();
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
 
-	const [formData, setFormData] = useState<GodotFlags>({
+	const [formData, setFormData] = useState<SubmissionData>({
+		fingerprint: EMPTY_FINGERPRINT,
 		buildName: '',
 		godotVersion: defaultGodotVersion,
 		encryptionKey: '',
 		targetPlatforms: [],
 		buildTarget: 'template_release',
-		LtoMode: 'none',
 		additionalFlags: '',
 	});
 
@@ -153,6 +143,15 @@ export default function Form() {
 
 	return (
 		<div>
+			<div className={styles.formGroup}>
+				<div className="warning-text">
+					This site is in active development. &nbsp;
+					<a href="https://github.com/Yogeb-tech/gdcompile/issues">
+						Feedback and bug reports are welcome
+					</a>
+					.
+				</div>
+			</div>
 			<form onSubmit={handleSubmit}>
 				<div className={styles.formGroup}>
 					<label htmlFor="buildName">Build Name *</label>
@@ -245,17 +244,14 @@ export default function Form() {
 				</div>
 
 				<div className={styles.formGroup}>
-					<label htmlFor="LtoMode">LTO Mode</label>
-					<select
-						name="LtoMode"
-						id="LtoMode"
+					<label htmlFor="monoEnabled">Mono Enabled? (Use C# Build)</label>
+					<input
+						type="checkbox"
+						name="monoEnabled"
+						id="monoEnabled"
 						onChange={handleFormChange}
 						value={formData.buildTarget}
-					>
-						<option value="none">None</option>
-						<option value="thin">Thin</option>
-						<option value="full">Full</option>
-					</select>
+					></input>
 				</div>
 
 				<div className={styles.formGroup}>

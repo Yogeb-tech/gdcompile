@@ -20,3 +20,7 @@ export function createFingerprintData(data: VisitorData): FingerprintData | null
 export function verifyFingerprintData(data: FingerprintData, expectedHash: string): boolean {
 	return verifyData(data.hash, expectedHash);
 }
+
+export const EMPTY_FINGERPRINT: FingerprintData = {
+	hash: '',
+};

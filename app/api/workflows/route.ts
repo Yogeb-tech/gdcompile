@@ -54,11 +54,9 @@ export async function POST(request: Request) {
 			runEditorMono: false,
 			runTemplate: true,
 			runTemplateMono: false,
-			LtoMode: 'none', // Default or make configurable in form
+			ltoMode: 'none', // Default or make configurable in form
 		});
 
-		// I don't need snakecase library, I can pass similar to how I passed values in trggerWorkflow()
-		// Record and save user data in DB
 		const job: JobStatus = {
 			id: id,
 			buildName: buildName,

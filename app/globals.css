@@ -38,6 +38,13 @@ body {
 	border-radius: var(--pico-border-radius);
 }
 
+.warning-text {
+	color: orange;
+	padding: 0.5rem 0.75rem;
+	background-color: color-mix(in srgb, orange 10%, transparent);
+	border-radius: var(--pico-border-radius);
+}
+
 button.outline.btn-red {
 	--pico-color: #d93526;
 	--pico-border-color: #d93526;

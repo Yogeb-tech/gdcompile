@@ -7,9 +7,9 @@ import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 import { IconDownload, IconTrash } from '@tabler/icons-react';
 import { capitalCase } from 'change-case';
 
-// TODO: Address the fact users could delete as a job is being queued, or download as a job is being deleted
-// TODO: Make sure release dropdown menu properly recoginizes build target release, editor, both. Also add mono checkbox flag
-// TODO: Builds should expire in a month, check action_godot_builder -> finish project
+// TODO: Also add mono checkbox flag (mono support)
+// TODO: Builds should expire in a month
+// TODO: check action_godot_builder -> finish project
 
 export default function ViewBuilds() {
 	const { fingerprintData } = useVisitorContext();
