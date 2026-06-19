@@ -16,6 +16,7 @@ export interface SubmissionData {
 	encryptionKey: string;
 	targetPlatforms: TargetPlatform['name'][];
 	buildTarget: 'template_release' | 'template_debug';
+	monoEnabled: boolean;
 	additionalFlags: string;
 }
 
@@ -42,6 +43,7 @@ export default function Form() {
 		encryptionKey: '',
 		targetPlatforms: [],
 		buildTarget: 'template_release',
+		monoEnabled: false,
 		additionalFlags: '',
 	});
 
@@ -143,15 +145,6 @@ export default function Form() {
 
 	return (
 		<div>
-			<div className={styles.formGroup}>
-				<div className="warning-text">
-					This site is in active development. &nbsp;
-					<a href="https://github.com/Yogeb-tech/gdcompile/issues">
-						Feedback and bug reports are welcome
-					</a>
-					.
-				</div>
-			</div>
 			<form onSubmit={handleSubmit}>
 				<div className={styles.formGroup}>
 					<label htmlFor="buildName">Build Name *</label>
@@ -244,7 +237,7 @@ export default function Form() {
 				</div>
 
 				<div className={styles.formGroup}>
-					<label htmlFor="monoEnabled">Mono Enabled? (Use C# Build)</label>
+					<label htmlFor="monoEnabled">Mono Enabled? (Use C# Build) (Optional)</label>
 					<input
 						type="checkbox"
 						name="monoEnabled"
@@ -255,7 +248,14 @@ export default function Form() {
 				</div>
 
 				<div className={styles.formGroup}>
-					<label htmlFor="additionalFlags">Additional SCons Flags (Optional)</label>
+					<label htmlFor="additionalFlags">
+						Additional SCons Flags (Optional){' '}
+						<small>
+							<a href="https://docs.godotengine.org/en/stable/engine_details/development/compiling/optimizing_for_size.html">
+								View compression build flags
+							</a>
+						</small>
+					</label>
 					<input
 						type="text"
 						name="additionalFlags"

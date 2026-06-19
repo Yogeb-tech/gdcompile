@@ -24,6 +24,7 @@ export async function POST(request: Request) {
 			buildTarget,
 			additionalFlags,
 			fingerprint,
+			monoEnabled,
 		} = submissionData;
 
 		// Validate required fields
@@ -41,20 +42,28 @@ export async function POST(request: Request) {
 			});
 		}
 
+		// Evaluate cases for template flags
+		const templateFlags = {
+			runEditor: buildTarget === 'template_debug' && !monoEnabled,
+			runEditorMono: buildTarget === 'template_debug' && monoEnabled,
+			runTemplate: buildTarget === 'template_release' && !monoEnabled,
+			runTemplateMono: buildTarget === 'template_release' && monoEnabled,
+		};
+
 		// Trigger GitHub workflow dispatch using SubmissionData
 		const { id } = await triggerWorkflow('main', {
 			// Map SubmissionData to workflow dispatch parameters
-			tag: godotVersion, // Using godotVersion as the tag
+			tag: godotVersion,
 			flags: additionalFlags,
 			platforms: targetPlatforms, // Map targetPlatforms to platforms for workflow
 			encryptionKey: encryptionKey,
 			// Default values for workflow-specific fields
 			branch: 'main',
-			runEditor: true,
-			runEditorMono: false,
-			runTemplate: true,
-			runTemplateMono: false,
-			ltoMode: 'none', // Default or make configurable in form
+			runEditor: templateFlags.runEditor,
+			runEditorMono: templateFlags.runEditorMono,
+			runTemplate: templateFlags.runTemplate,
+			runTemplateMono: templateFlags.runTemplateMono,
+			ltoMode: 'none',
 		});
 
 		const job: JobStatus = {

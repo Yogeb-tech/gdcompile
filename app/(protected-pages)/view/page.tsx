@@ -7,7 +7,6 @@ import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 import { IconDownload, IconTrash } from '@tabler/icons-react';
 import { capitalCase } from 'change-case';
 
-// TODO: Also add mono checkbox flag (mono support)
 // TODO: Builds should expire in a month
 // TODO: check action_godot_builder -> finish project
 
@@ -25,6 +24,10 @@ export default function ViewBuilds() {
 
 	return (
 		<div>
+			<div className="warning-text" style={{ margin: '0 0 2rem' }}>
+				This site is in active development.&nbsp;
+				<a href="https://github.com/Yogeb-tech/gdcompile/issues">Please report any build issues</a>.
+			</div>
 			<table>
 				<thead>
 					<tr>
