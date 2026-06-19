@@ -44,9 +44,11 @@ export async function POST(request: Request) {
 
 		const { count } = await supabase
 			.from('jobs')
-			.select('*')
-			.eq('fingerprint->>hash', fingerprint.hash);
+			.select('*', { count: 'exact' })
+			.eq('fingerprint->>hash', fingerprint.hash)
+			.is('deleted_at', null);
 
+		console.log('Count: ', count);
 		if (count && count >= 3) {
 			return NextResponse.json(
 				{ error: "You've reached the maximum of 3 builds per user" },

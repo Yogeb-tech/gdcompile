@@ -18,6 +18,7 @@ export async function GET(
 			.select('*')
 			.eq('fingerprint->>hash', fingerprint)
 			.is('deleted_at', null);
+
 		console.log(`[API]  ${JSON.stringify(rawJobs, null, 2)}`);
 
 		if (error) {

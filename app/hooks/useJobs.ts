@@ -12,7 +12,6 @@ interface UseJobsReturn {
 	error: string | null;
 }
 
-// HACK: Refresh support?
 export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJobsReturn {
 	const [jobs, setJobs] = useState<JobStatus[] | null>(null);
 	const [loading, setLoading] = useState(false);

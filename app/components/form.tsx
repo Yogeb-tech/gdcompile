@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { EMPTY_FINGERPRINT, FingerprintData } from '../types/fingerprint';
 import { useKey } from '../hooks/useKey';
 import { useVisitorContext } from './fingerprintProvider';
+import { StatusCodes } from 'http-status-codes';
 
 export interface SubmissionData {
 	fingerprint: FingerprintData;
@@ -35,6 +36,7 @@ export default function Form() {
 	const router = useRouter();
 	const { tags, loading: tagsLoading, error: tagsError } = useGodot4Tags();
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
+	const [errorMessage, setErrorMessage] = useState<string>('');
 
 	const [formData, setFormData] = useState<SubmissionData>({
 		fingerprint: EMPTY_FINGERPRINT,
@@ -126,6 +128,10 @@ export default function Form() {
 			});
 
 			if (!response.ok) {
+				if (response.status === StatusCodes.TOO_MANY_REQUESTS) {
+					setErrorMessage("You've reached the maximum of 3 builds per user");
+					return;
+				}
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 
@@ -135,6 +141,7 @@ export default function Form() {
 			await alert('Build submitted successfully!');
 			// Redirect to view builds page
 			router.push(`/view`);
+			setErrorMessage('');
 		} catch (error) {
 			console.error('Submission failed:', error);
 			alert('Failed to submit. Please try again.');
@@ -299,6 +306,12 @@ export default function Form() {
 						<small className="error-text">Please select at least one platform</small>
 					)}
 				</fieldset>
+
+				{errorMessage !== '' && (
+					<div className={styles.formData}>
+						<div className="error-text">{errorMessage}</div>
+					</div>
+				)}
 
 				<button type="submit" disabled={isSubmitting || !fingerprint} aria-busy={isSubmitting}>
 					{isSubmitting ? 'Generating...' : 'Generate Build'}
