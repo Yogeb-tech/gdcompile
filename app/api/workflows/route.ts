@@ -42,6 +42,18 @@ export async function POST(request: Request) {
 			});
 		}
 
+		const { count } = await supabase
+			.from('jobs')
+			.select('*')
+			.eq('fingerprint->>hash', fingerprint.hash);
+
+		if (count && count >= 3) {
+			return NextResponse.json(
+				{ error: "You've reached the maximum of 3 builds per user" },
+				{ status: StatusCodes.TOO_MANY_REQUESTS }
+			);
+		}
+
 		// Evaluate cases for template flags
 		const templateFlags = {
 			runEditor: buildTarget === 'template_debug' && !monoEnabled,
@@ -66,11 +78,15 @@ export async function POST(request: Request) {
 			ltoMode: 'none',
 		});
 
+		const expiresAt = new Date();
+		expiresAt.setHours(expiresAt.getHours() + 24);
+
 		const job: JobStatus = {
 			id: id,
 			buildName: buildName,
 			status: 'queued',
 			createdAt: new Date().toISOString(),
+			expiresAt: expiresAt.toISOString(),
 			targetPlatforms: targetPlatforms,
 			fingerprint: fingerprint,
 		};

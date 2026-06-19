@@ -12,7 +12,13 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 		console.log('[API] Request ID: ', id);
 
 		// Delete from db
-		const { error } = await supabase.from('jobs').delete().eq('id', Number(id));
+		const { error } = await supabase
+			.from('jobs')
+			.update({
+				deleted_at: new Date().toISOString(),
+				artifact_deleted: false, // Will update after GitHub cleanup
+			})
+			.eq('id', Number(id));
 
 		if (error) {
 			console.error('supabase delete error:', error);
@@ -24,6 +30,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
 		// Delete artifact from workflows
 		await deleteWorkflowRunAndArtifacts(Number(id));
+
+		// Mark artifact as deleted
+		await supabase.from('jobs').update({ artifact_deleted: true }).eq('id', Number(id));
 
 		return NextResponse.json({ message: 'Job deleted successfully' }, { status: StatusCodes.OK });
 	} catch (error) {

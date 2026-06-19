@@ -12,6 +12,7 @@ export interface JobStatus {
 	createdAt: string;
 	completedAt?: string;
 	downloadUrl?: string;
+	expiresAt: string;
 	error?: string;
 	targetPlatforms: TargetPlatform['name'][];
 	fingerprint: FingerprintData;

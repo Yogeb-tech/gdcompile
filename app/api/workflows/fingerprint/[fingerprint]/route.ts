@@ -16,8 +16,8 @@ export async function GET(
 		const { data: rawJobs, error } = await supabase
 			.from('jobs')
 			.select('*')
-			.eq('fingerprint->>hash', fingerprint);
-
+			.eq('fingerprint->>hash', fingerprint)
+			.is('deleted_at', null);
 		console.log(`[API]  ${JSON.stringify(rawJobs, null, 2)}`);
 
 		if (error) {
