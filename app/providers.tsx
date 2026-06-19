@@ -1,6 +1,7 @@
 'use client';
 import { FingerprintProvider } from '@fingerprint/react';
 import { VisitorProvider } from './components/fingerprintProvider';
+import { Analytics } from '@vercel/analytics/next';
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	return (
@@ -14,6 +15,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 			}}
 		>
 			<VisitorProvider>{children}</VisitorProvider>
+			<Analytics />
 		</FingerprintProvider>
 	);
 }
