@@ -10,6 +10,8 @@ export async function POST(request: Request) {
 		const authHeader = request.headers.get('authorization');
 		const cronSecret = process.env.CRON_SECRET;
 
+		console.log(authHeader);
+		console.log(cronSecret);
 		if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
 			return new Response('Unauthorized', {
 				status: 401,
@@ -23,10 +25,24 @@ export async function POST(request: Request) {
 			.is('deleted_at', null)
 			.lt('expires_at', new Date().toISOString());
 
+		// Update DB
+		await supabase
+			.from('jobs')
+			.update({ deleted_at: new Date().toISOString(), artifact_deleted: true })
+			.eq(
+				'id',
+				expiredJobs?.map((job) => job.id)
+			);
+
 		let cleaned = 0;
 		for (const job of expiredJobs || []) {
-			await deleteWorkflowRunAndArtifacts(job.id);
-			cleaned++;
+			try {
+				await deleteWorkflowRunAndArtifacts(job.id);
+				cleaned++;
+				await supabase.from('jobs').update({ artifact_deleted: true }).eq('id', job.id);
+			} catch (error) {
+				console.error(`Failed to clean job ${job.id}:`, error);
+			}
 		}
 
 		return NextResponse.json({

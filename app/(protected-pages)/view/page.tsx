@@ -7,8 +7,6 @@ import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
 import { IconDownload, IconTrash } from '@tabler/icons-react';
 import { capitalCase } from 'change-case';
 
-// TODO: check action_godot_builder -> setup vercel completely -> finish project
-
 export default function ViewBuilds() {
 	const { fingerprintData } = useVisitorContext();
 
@@ -26,6 +24,10 @@ export default function ViewBuilds() {
 			<div className="warning-text" style={{ margin: '0 0 2rem' }}>
 				This site is in active development.&nbsp;
 				<a href="https://github.com/Yogeb-tech/gdcompile/issues">Please report any build issues</a>.
+				<br />
+				Builds will expire after 72 hours.
+				<br />
+				Builds usually take approximately 30 minutes to 2 hours
 			</div>
 			<table>
 				<thead>

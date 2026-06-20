@@ -52,7 +52,7 @@ export async function POST(request: Request) {
 		console.log('Count: ', count);
 		if (count && count >= BUILD_LIMITS) {
 			return NextResponse.json(
-				{ error: "You've reached the maximum of 3 builds per user" },
+				{ error: `You've reached the maximum of ${BUILD_LIMITS} builds per user` },
 				{ status: StatusCodes.TOO_MANY_REQUESTS }
 			);
 		}
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
 		});
 
 		const expiresAt = new Date();
-		expiresAt.setHours(expiresAt.getHours() + 24);
+		expiresAt.setHours(expiresAt.getHours() + 72);
 
 		const job: JobStatus = {
 			id: id,
