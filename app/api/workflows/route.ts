@@ -7,6 +7,7 @@ import { SubmissionData } from '@/app/components/form';
 import { getSupabaseAdmin } from '@/app/utils/supabase';
 
 const supabase = getSupabaseAdmin();
+const BUILD_LIMITS = 4;
 
 export async function POST(request: Request) {
 	try {
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
 			.is('deleted_at', null);
 
 		console.log('Count: ', count);
-		if (count && count >= 3) {
+		if (count && count >= BUILD_LIMITS) {
 			return NextResponse.json(
 				{ error: "You've reached the maximum of 3 builds per user" },
 				{ status: StatusCodes.TOO_MANY_REQUESTS }

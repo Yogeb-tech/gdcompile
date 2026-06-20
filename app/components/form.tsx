@@ -1,6 +1,6 @@
 'use client';
 import camelCase from 'camelcase';
-import { ChangeEvent, useState, useEffect, useRef } from 'react';
+import { ChangeEvent, useState, useEffect, useRef, MouseEventHandler } from 'react';
 import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
 import { useGodot4Tags } from '../hooks/useGodotTags';
@@ -37,6 +37,11 @@ export default function Form() {
 	const { tags, loading: tagsLoading, error: tagsError } = useGodot4Tags();
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
 	const [errorMessage, setErrorMessage] = useState<string>('');
+	const presets: Record<string, string> = {
+		Compress: 'optimize=size lto=full',
+		'Compress (No 3D)': 'optimize=size lto=full disable_3d=yes module_godot_physics_3d_enabled=no',
+		None: '',
+	};
 
 	const [formData, setFormData] = useState<SubmissionData>({
 		fingerprint: EMPTY_FINGERPRINT,
@@ -239,7 +244,6 @@ export default function Form() {
 					>
 						<option value="template_release">Release</option>
 						<option value="template_debug">Editor</option>
-						<option value="template_both">Editor & Release</option>
 					</select>
 				</div>
 
@@ -256,21 +260,42 @@ export default function Form() {
 
 				<div className={styles.formGroup}>
 					<label htmlFor="additionalFlags">
-						Additional SCons Flags (Optional){' '}
+						Additional SCons Flags (Optional) &nbsp;
 						<small>
 							<a href="https://docs.godotengine.org/en/stable/engine_details/development/compiling/optimizing_for_size.html">
-								View compression build flags
+								View more build flags
 							</a>
 						</small>
 					</label>
-					<input
-						type="text"
-						name="additionalFlags"
-						id="additionalFlags"
-						onChange={handleFormChange}
-						value={formData.additionalFlags}
-						placeholder="optimize=size lto=full disable_3d=yes"
-					/>
+					<div className={styles.additionalFlags}>
+						<input
+							type="text"
+							name="additionalFlags"
+							id="additionalFlags"
+							onChange={handleFormChange}
+							value={formData.additionalFlags}
+						/>
+						<select
+							name="select"
+							aria-label="select"
+							defaultValue=""
+							onChange={(event) => {
+								const value = event.target.value;
+
+								setFormData((prev) => ({
+									...prev,
+									additionalFlags: presets[value],
+								}));
+							}}
+						>
+							<option disabled value="">
+								Preset?
+							</option>
+							<option>Compress</option>
+							<option>Compress (No 3D)</option>
+							<option>None</option>
+						</select>
+					</div>
 					<small>
 						Space-separated key=value flags. Web-specific options like javascript_eval, threads,
 						dlink_enabled should also go here.
