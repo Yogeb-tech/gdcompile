@@ -1,6 +1,6 @@
 'use client';
 import camelCase from 'camelcase';
-import { ChangeEvent, useState, useEffect, useRef, MouseEventHandler } from 'react';
+import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
 import { useGodot4Tags } from '../hooks/useGodotTags';
