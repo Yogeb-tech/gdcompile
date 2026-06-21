@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import { TargetPlatform } from '../types/godot';
+import { validateBuildFlags } from './security';
 
 export type Branch = {
 	name: string;
@@ -88,6 +89,9 @@ export async function fetchGodotLatestTag(): Promise<Tag> {
 
 export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispatchParams) {
 	try {
+		// Defend against Command Injection (Validate Inputs First)
+		validateBuildFlags(params.templateModuleFlags || '', 'templateModuleFlags');
+
 		// Record time and trigger the workflow
 		const inputs = {
 			request_id: params.requestId,
@@ -111,8 +115,6 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 			run_template: params.runTemplate.toString(),
 			run_template_mono: params.runTemplateMono.toString(),
 		};
-
-		const dispatchTimeMs = Date.now();
 
 		await octokit.rest.actions.createWorkflowDispatch({
 			owner: MY_ORG,
