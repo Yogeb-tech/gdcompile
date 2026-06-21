@@ -15,7 +15,10 @@ export function useKey() {
 
 	const exportBase64 = async (cryptoKey: CryptoKey) => {
 		const raw = await crypto.subtle.exportKey('raw', cryptoKey);
-		return btoa(String.fromCharCode(...new Uint8Array(raw)));
+		const bytes = new Uint8Array(raw);
+		return Array.from(bytes)
+			.map((b) => b.toString(16).padStart(2, '0'))
+			.join('');
 	};
 
 	return { key, generateAESKey, exportBase64 };
