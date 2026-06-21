@@ -122,7 +122,7 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 			inputs: inputs,
 		});
 
-		console.log(`Workflow dispatched. Waiting for GitHub to generate the Run ID...`);
+		console.log(`Workflow dispatched. Waiting for Run ID for build: ${params.requestId}...`);
 
 		const maxRetries = 10;
 		const delayBetweenRetries = 2000;
@@ -141,17 +141,15 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 				per_page: 5, // Just grab the 5 most recent runs
 			});
 
-			// Manually filter for runs that started just now
-			const recentRuns = runsResponse.data.workflow_runs.filter((run) => {
-				const runCreatedMs = new Date(run.created_at).getTime();
-				// If it was created within 10 seconds before our dispatch or anytime after
-				return runCreatedMs >= dispatchTimeMs - 10000;
+			const expectedName = `Godot Build - ${params.requestId}`;
+
+			const targetRun = runsResponse.data.workflow_runs.find((run) => {
+				return run.name === expectedName;
 			});
 
-			if (recentRuns.length > 0) {
-				const runId = recentRuns[0].id;
-				console.log(`Successfully caught Run ID: ${runId}`);
-				return { id: runId };
+			if (targetRun) {
+				console.log(`Successfully caught Run ID: ${targetRun.id}`);
+				return { id: targetRun.id };
 			}
 		}
 
