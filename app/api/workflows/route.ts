@@ -42,14 +42,13 @@ export async function POST(request: Request) {
 				status: StatusCodes.BAD_REQUEST,
 			});
 		}
-
+		console.log('Full request body:', request.body);
 		const { count } = await supabase
 			.from('jobs')
 			.select('*', { count: 'exact' })
 			.eq('fingerprint->>hash', fingerprint.hash)
 			.is('deleted_at', null);
 
-		console.log('Count: ', count);
 		if (count && count >= BUILD_LIMITS) {
 			return NextResponse.json(
 				{ error: `You've reached the maximum of ${BUILD_LIMITS} builds per user` },
@@ -66,10 +65,12 @@ export async function POST(request: Request) {
 		};
 
 		// Trigger GitHub workflow dispatch using SubmissionData
+		const requestId = crypto.randomUUID();
 		const { id } = await triggerWorkflow('main', {
 			// Map SubmissionData to workflow dispatch parameters
+			requestId: requestId,
 			tag: godotVersion,
-			flags: additionalFlags,
+			templateModuleFlags: additionalFlags,
 			platforms: targetPlatforms, // Map targetPlatforms to platforms for workflow
 			encryptionKey: encryptionKey,
 			// Default values for workflow-specific fields

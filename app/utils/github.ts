@@ -25,12 +25,13 @@ export type GodotVersionData = {
 };
 
 export type WorkflowDispatchParams = {
+	requestId: string;
 	branch: string;
 	tag: string;
 	ltoMode: string;
-	flags: string;
 	encryptionKey: string;
 	platforms: TargetPlatform['name'][];
+	templateModuleFlags: string;
 	runEditor: boolean;
 	runEditorMono: boolean;
 	runTemplate: boolean;
@@ -87,13 +88,17 @@ export async function fetchGodotLatestTag(): Promise<Tag> {
 
 export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispatchParams) {
 	try {
+		// Record time and trigger the workflow
 		const inputs = {
+			request_id: params.requestId,
 			repo: 'godotengine/godot',
 			'base-branch': params.branch,
 			tag: params.tag,
 			tag_release: params.tag,
-			module_flags: params.flags,
-			template_module_flags: '',
+			module_flags: '',
+			encryption_key: params.encryptionKey || '',
+			platform_type: params.platforms.join(','),
+			template_module_flags: params.templateModuleFlags || '',
 			release_repo: '',
 			lto:
 				params.ltoMode === 'none'
@@ -101,11 +106,13 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 					: params.ltoMode === 'thin'
 						? 'lto=thin'
 						: 'lto=full',
-			run_editor: params.runEditor,
-			run_editor_mono: params.runEditorMono,
-			run_template: params.runTemplate,
-			run_template_mono: params.runTemplateMono,
+			run_editor: params.runEditor.toString(),
+			run_editor_mono: params.runEditorMono.toString(),
+			run_template: params.runTemplate.toString(),
+			run_template_mono: params.runTemplateMono.toString(),
 		};
+
+		const dispatchTimeMs = Date.now();
 
 		await octokit.rest.actions.createWorkflowDispatch({
 			owner: MY_ORG,
@@ -115,29 +122,46 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 			inputs: inputs,
 		});
 
-		// Wait a moment for workflow to start
-		await new Promise((resolve) => setTimeout(resolve, 3000));
+		console.log(`Workflow dispatched. Waiting for GitHub to generate the Run ID...`);
 
-		// Fetch ID from most recent workflow run
-		const { data } = await octokit.rest.actions.listWorkflowRuns({
-			owner: MY_ORG,
-			repo: 'action_godot_builder',
-			workflow_id: process.env.WORKFLOW_ID!,
-			per_page: 1,
-		});
+		const maxRetries = 10;
+		const delayBetweenRetries = 2000;
+		const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-		if (data.workflow_runs.length === 0) {
-			throw new Error('No workflow run found after dispatch');
+		// Poll for the run
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			await delay(delayBetweenRetries);
+			console.log(`Polling for Run ID... (Attempt ${attempt}/${maxRetries})`);
+
+			const runsResponse = await octokit.rest.actions.listWorkflowRuns({
+				owner: MY_ORG,
+				repo: 'action_godot_builder',
+				workflow_id: process.env.WORKFLOW_ID!,
+				event: 'workflow_dispatch',
+				per_page: 5, // Just grab the 5 most recent runs
+			});
+
+			// Manually filter for runs that started just now
+			const recentRuns = runsResponse.data.workflow_runs.filter((run) => {
+				const runCreatedMs = new Date(run.created_at).getTime();
+				// If it was created within 10 seconds before our dispatch or anytime after
+				return runCreatedMs >= dispatchTimeMs - 10000;
+			});
+
+			if (recentRuns.length > 0) {
+				const runId = recentRuns[0].id;
+				console.log(`Successfully caught Run ID: ${runId}`);
+				return { id: runId };
+			}
 		}
 
-		return data.workflow_runs[0];
+		throw new Error('Workflow was dispatched, but GitHub took too long to generate a Run ID.');
 	} catch (error) {
 		console.error('GitHub API error:', error);
 		throw error;
 	}
 }
 
-// HACK: This might not be useful. Deprecated?
 export async function getWorkflowStatus(target_run_id: number): Promise<string> {
 	try {
 		const { data } = await octokit.rest.actions.getWorkflowRun({
