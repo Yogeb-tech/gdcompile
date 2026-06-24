@@ -25,9 +25,9 @@ export default function ViewBuilds() {
 				This site is in active development.&nbsp;
 				<a href="https://github.com/Yogeb-tech/gdcompile/issues">Please report any build issues</a>.
 				<br />
-				Builds will expire after 72 hours.
+				Builds will expire after 1 week.
 				<br />
-				Builds usually take approximately 30 minutes to 2 hours
+				Builds usually take approximately 30 minutes to 2 hours once started.
 			</div>
 			<table>
 				<thead>
@@ -55,7 +55,9 @@ function BuildRow({ job }: { job: JobStatus }) {
 	return (
 		<tr>
 			<th scope="row">{job.buildName}</th>
-			<td className={job.status === 'failure' ? 'error-text' : ''}>{capitalCase(job.status)}</td>
+			<td className={job.conclusion === 'failure' ? 'error-text' : ''}>
+				{!job.conclusion ? capitalCase(job.status) : capitalCase(job.conclusion)}
+			</td>
 			<td>{targetPlatformDisplayString(job)}</td>
 			<td>{job.godotVersion}</td>
 			<td>

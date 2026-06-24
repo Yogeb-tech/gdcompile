@@ -45,6 +45,7 @@ export async function POST(request: Request) {
 		const { error } = await supabase
 			.from('jobs')
 			.update({
+				conclusion: githubPayload.workflow_run.conclusion,
 				status: githubPayload.workflow_run.status,
 				completed_at: githubPayload.workflow_run.updated_at,
 			})
