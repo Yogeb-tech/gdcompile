@@ -8,6 +8,7 @@ export type TargetPlatform = {
 export interface JobStatus {
 	id: number;
 	buildName: string;
+	godotVersion: string;
 	status: string;
 	createdAt: string;
 	completedAt?: string;

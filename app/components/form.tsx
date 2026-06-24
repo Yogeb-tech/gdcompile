@@ -221,6 +221,7 @@ export default function Form() {
 							Generate Key
 						</a>
 					</div>
+					{/* TODO: Add a copy to clipboard button */}
 					<input
 						type="text"
 						name="encryptionKey"
@@ -228,6 +229,7 @@ export default function Form() {
 						onChange={handleFormChange}
 						value={formData.encryptionKey}
 						placeholder="Your encryption key here"
+						readOnly
 					/>
 					<small>
 						Leave empty if not using encryption. Make sure you store this somewhere safe.

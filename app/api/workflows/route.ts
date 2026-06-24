@@ -88,6 +88,7 @@ export async function POST(request: Request) {
 		const job: JobStatus = {
 			id: id,
 			buildName: buildName,
+			godotVersion: godotVersion,
 			status: 'queued',
 			createdAt: new Date().toISOString(),
 			expiresAt: expiresAt.toISOString(),

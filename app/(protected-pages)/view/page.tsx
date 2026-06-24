@@ -35,6 +35,7 @@ export default function ViewBuilds() {
 						<th scope="col">Build Name</th>
 						<th scope="col">Status</th>
 						<th scope="col">Target Platforms</th>
+						<th scope="col">Godot Version</th>
 						<th scope="col"></th>
 						<th scope="col"></th>
 					</tr>
@@ -56,6 +57,7 @@ function BuildRow({ job }: { job: JobStatus }) {
 			<th scope="row">{job.buildName}</th>
 			<td className={job.status === 'failure' ? 'error-text' : ''}>{capitalCase(job.status)}</td>
 			<td>{targetPlatformDisplayString(job)}</td>
+			<td>{job.godotVersion}</td>
 			<td>
 				<DownloadAllButton runId={job.id} />
 			</td>
