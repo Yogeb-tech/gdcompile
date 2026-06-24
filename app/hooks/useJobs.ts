@@ -19,6 +19,9 @@ export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJo
 
 	useEffect(() => {
 		const fetchJobs = async () => {
+			if (!visitorId) {
+				console.log('[DEBUG] missing visitorid for useJobs.ts');
+			}
 			if (!visitorId || skip) return;
 
 			try {

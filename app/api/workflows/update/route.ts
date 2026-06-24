@@ -31,9 +31,6 @@ export async function POST(request: Request) {
 		const body = await request.json();
 		const githubPayload = body as GitHubWebhookPayload;
 
-		console.log('[API] Request body:', githubPayload);
-		console.log('[API] Request headers:', Object.fromEntries(request.headers.entries()));
-
 		const { error } = await supabase
 			.from('jobs')
 			.update({
