@@ -31,6 +31,7 @@ export async function POST(request: Request) {
 		const body = await request.json();
 		const githubPayload = body as GitHubWebhookPayload;
 
+		console.log(`[API] Workflow status: ${githubPayload.workflow_job.status}`);
 		const { error } = await supabase
 			.from('jobs')
 			.update({
