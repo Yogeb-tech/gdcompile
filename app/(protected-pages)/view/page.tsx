@@ -52,6 +52,8 @@ export default function ViewBuilds() {
 }
 
 function BuildRow({ job }: { job: JobStatus }) {
+	const isInProgress = job.status !== 'completed';
+
 	return (
 		<tr>
 			<th scope="row">{job.buildName}</th>
@@ -64,7 +66,7 @@ function BuildRow({ job }: { job: JobStatus }) {
 				<DownloadAllButton runId={job.id} />
 			</td>
 			<td>
-				<DeleteButton runId={job.id} />
+				<DeleteButton runId={job.id} disabled={isInProgress} />
 			</td>
 		</tr>
 	);
@@ -98,7 +100,7 @@ function DownloadAllButton({ runId }: { runId: number }) {
 	);
 }
 
-function DeleteButton({ runId }: { runId: number }) {
+function DeleteButton({ runId, disabled }: { runId: number; disabled: boolean }) {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleDelete = async () => {
@@ -122,7 +124,7 @@ function DeleteButton({ runId }: { runId: number }) {
 			className="outline btn-red"
 			type="button"
 			onClick={handleDelete}
-			disabled={isLoading}
+			disabled={isLoading || disabled}
 			aria-busy={isLoading}
 		>
 			{!isLoading && <IconTrash />}
