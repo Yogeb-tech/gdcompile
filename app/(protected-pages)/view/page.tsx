@@ -52,7 +52,7 @@ export default function ViewBuilds() {
 }
 
 function BuildRow({ job }: { job: JobStatus }) {
-	const isInProgress = job.status !== 'completed';
+	const isInProgress = job.conclusion == null;
 
 	return (
 		<tr>
