@@ -63,7 +63,7 @@ function BuildRow({ job }: { job: JobStatus }) {
 			<td>{targetPlatformDisplayString(job)}</td>
 			<td>{job.godotVersion}</td>
 			<td>
-				<DownloadAllButton runId={job.id} />
+				<DownloadAllButton runId={job.id} disabled={isInProgress} />
 			</td>
 			<td>
 				<DeleteButton runId={job.id} disabled={isInProgress} />
@@ -72,7 +72,7 @@ function BuildRow({ job }: { job: JobStatus }) {
 	);
 }
 
-function DownloadAllButton({ runId }: { runId: number }) {
+function DownloadAllButton({ runId, disabled }: { runId: number; disabled: boolean }) {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handleDownloadAll = async () => {
@@ -92,7 +92,7 @@ function DownloadAllButton({ runId }: { runId: number }) {
 			className="outline"
 			type="button"
 			onClick={handleDownloadAll}
-			disabled={isLoading}
+			disabled={isLoading || disabled}
 			aria-busy={isLoading}
 		>
 			{!isLoading && <IconDownload />}
