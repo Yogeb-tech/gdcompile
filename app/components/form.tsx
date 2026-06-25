@@ -134,7 +134,12 @@ export default function Form() {
 
 			if (!response.ok) {
 				if (response.status === StatusCodes.TOO_MANY_REQUESTS) {
-					setErrorMessage("You've reached the maximum of 3 builds per user");
+					try {
+						const errorData = await response.json();
+						setErrorMessage(errorData.error || 'Too many requests');
+					} catch {
+						setErrorMessage('Too many requests');
+					}
 					return;
 				}
 				throw new Error(`HTTP error! status: ${response.status}`);

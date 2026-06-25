@@ -143,10 +143,10 @@ export async function triggerWorkflow(branchOrTag: string, params: WorkflowDispa
 				per_page: 5, // Just grab the 5 most recent runs
 			});
 
-			const expectedName = `Godot Build - ${params.requestId}`;
+			const expectedID = `${params.requestId}`;
 
 			const targetRun = runsResponse.data.workflow_runs.find((run) => {
-				return run.name === expectedName;
+				return run.name?.includes(expectedID) ?? false;
 			});
 
 			if (targetRun) {
