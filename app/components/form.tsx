@@ -3,7 +3,7 @@ import camelCase from 'camelcase';
 import { ChangeEvent, useState, useEffect, useRef } from 'react';
 import styles from './form.module.css';
 import { TargetPlatform } from '../types/godot';
-import { useGodot4Tags } from '../hooks/useGodotTags';
+import { useSupportedGodotTags } from '../hooks/useGodotTags';
 import { useRouter } from 'next/navigation';
 import { EMPTY_FINGERPRINT, FingerprintData } from '../types/fingerprint';
 import { useKey } from '../hooks/useKey';
@@ -34,7 +34,7 @@ export default function Form() {
 	const { fingerprintData: fingerprint } = useVisitorContext();
 	const { exportBase64, generateAESKey } = useKey();
 	const router = useRouter();
-	const { tags, loading: tagsLoading, error: tagsError } = useGodot4Tags();
+	const { tags, loading: tagsLoading, error: tagsError } = useSupportedGodotTags();
 	const defaultGodotVersion = tags.length > 0 ? tags[0].name : '';
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const presets: Record<string, string> = {

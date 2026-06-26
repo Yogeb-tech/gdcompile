@@ -23,11 +23,11 @@ export function useGodotTags() {
 	return { tags, loading, error };
 }
 
-export function useGodot4Tags() {
+export function useSupportedGodotTags() {
 	const result = useGodotTags();
 
 	return {
 		...result,
-		tags: result.tags.filter((tag) => /^4\.\d+(\.\d+)?/.test(tag.name)),
+		tags: result.tags.filter((tag) => /^4\.(6|7)(\.\d+)?-stable$/.test(tag.name)),
 	};
 }
