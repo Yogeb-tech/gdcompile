@@ -53,6 +53,7 @@ export default function ViewBuilds() {
 
 function BuildRow({ job }: { job: JobStatus }) {
 	const isInProgress = job.conclusion == null;
+	const buildFailed = job.conclusion === 'failure';
 
 	return (
 		<tr>
@@ -63,7 +64,7 @@ function BuildRow({ job }: { job: JobStatus }) {
 			<td>{targetPlatformDisplayString(job)}</td>
 			<td>{job.godotVersion}</td>
 			<td>
-				<DownloadAllButton runId={job.id} disabled={isInProgress} />
+				<DownloadAllButton runId={job.id} disabled={isInProgress || buildFailed} />
 			</td>
 			<td>
 				<DeleteButton runId={job.id} disabled={isInProgress} />
