@@ -9,6 +9,7 @@ import { capitalCase } from 'change-case';
 
 export default function ViewBuilds() {
 	const { fingerprintData } = useVisitorContext();
+	const [downloadingRunId, setDownloadingRunId] = useState<number | null>(null);
 
 	const { jobs, loading, error } = useJobs({
 		visitorId: fingerprintData?.hash ?? undefined,
@@ -43,7 +44,12 @@ export default function ViewBuilds() {
 
 				<tbody>
 					{jobs.map((job) => (
-						<BuildRow key={job.id} job={job} />
+						<BuildRow
+							key={job.id}
+							job={job}
+							downloadingRunId={downloadingRunId}
+							setDownloadingRunId={setDownloadingRunId}
+						/>
 					))}
 				</tbody>
 			</table>
@@ -51,7 +57,15 @@ export default function ViewBuilds() {
 	);
 }
 
-function BuildRow({ job }: { job: JobStatus }) {
+function BuildRow({
+	job,
+	downloadingRunId,
+	setDownloadingRunId,
+}: {
+	job: JobStatus;
+	downloadingRunId: number | null;
+	setDownloadingRunId: React.Dispatch<React.SetStateAction<number | null>>;
+}) {
 	const isInProgress = job.conclusion == null;
 	const buildFailed = job.conclusion === 'failure';
 
@@ -64,7 +78,12 @@ function BuildRow({ job }: { job: JobStatus }) {
 			<td>{targetPlatformDisplayString(job)}</td>
 			<td>{job.godotVersion}</td>
 			<td>
-				<DownloadAllButton runId={job.id} disabled={isInProgress || buildFailed} />
+				<DownloadAllButton
+					runId={job.id}
+					disabled={isInProgress || buildFailed}
+					downloadingRunId={downloadingRunId}
+					setDownloadingRunId={setDownloadingRunId}
+				/>
 			</td>
 			<td>
 				<DeleteButton runId={job.id} disabled={isInProgress} />
@@ -73,18 +92,29 @@ function BuildRow({ job }: { job: JobStatus }) {
 	);
 }
 
-function DownloadAllButton({ runId, disabled }: { runId: number; disabled: boolean }) {
-	const [isLoading, setIsLoading] = useState(false);
+function DownloadAllButton({
+	runId,
+	disabled,
+	downloadingRunId,
+	setDownloadingRunId,
+}: {
+	runId: number;
+	disabled: boolean;
+	downloadingRunId: number | null;
+	setDownloadingRunId: React.Dispatch<React.SetStateAction<number | null>>;
+}) {
+	const isLoading = downloadingRunId === runId;
 
 	const handleDownloadAll = async () => {
-		setIsLoading(true);
+		setDownloadingRunId(runId);
+
 		try {
 			await downloadAllWorkflowArtifacts(runId);
 		} catch (error) {
 			console.error('Download trigger failed: ', error);
 			alert('Could not start download. Please check your network or try again.');
 		} finally {
-			setIsLoading(false);
+			setDownloadingRunId(null);
 		}
 	};
 
@@ -93,7 +123,7 @@ function DownloadAllButton({ runId, disabled }: { runId: number; disabled: boole
 			className="outline"
 			type="button"
 			onClick={handleDownloadAll}
-			disabled={isLoading || disabled}
+			disabled={disabled || downloadingRunId !== null}
 			aria-busy={isLoading}
 		>
 			{!isLoading && <IconDownload />}
