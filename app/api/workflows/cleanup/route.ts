@@ -25,18 +25,18 @@ export async function GET(request: Request) {
 			.is('deleted_at', null)
 			.lt('expires_at', new Date().toISOString());
 
-		// Update DB
-		await supabase
-			.from('jobs')
-			.update({ deleted_at: new Date().toISOString(), artifact_deleted: true })
-			.eq(
-				'id',
-				expiredJobs?.map((job) => job.id)
-			);
+		if (!expiredJobs?.length) {
+			return NextResponse.json({ message: 'No expired jobs' });
+		}
 
 		let cleaned = 0;
 		for (const job of expiredJobs || []) {
 			try {
+				await supabase
+					.from('jobs')
+					.update({ deleted_at: new Date().toISOString(), artifact_deleted: true })
+					.eq('id', job.id);
+
 				await deleteWorkflowRunAndArtifacts(job.id);
 				cleaned++;
 				await supabase.from('jobs').update({ artifact_deleted: true }).eq('id', job.id);
