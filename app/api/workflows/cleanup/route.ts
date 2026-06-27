@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 const supabase = getSupabaseAdmin();
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
 	try {
 		const authHeader = request.headers.get('authorization');
 		const cronSecret = process.env.CRON_SECRET;
