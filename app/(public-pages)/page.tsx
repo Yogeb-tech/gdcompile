@@ -1,23 +1,16 @@
 'use client';
 
-import Form from '../(protected-pages)/create/page';
+import styles from './page.module.css';
 
 function HomePage() {
 	return (
 		<main className="container">
-			<article style={{ maxWidth: '600px', margin: '1rem auto', textAlign: 'center' }}>
+			<article className={styles.hero}>
 				<h1>GDCompile</h1>
 				<p>Custom Godot export templates, compiled on demand</p>
-				<p style={{ color: 'var(--muted-color)' }}>Builds take ~30–120 minutes</p>
+				<p className={styles.heroSubtitle}>Builds take ~30–120 minutes</p>
 				<h3>Features</h3>
-				<div
-					style={{
-						display: 'grid',
-						gridTemplateColumns: '1fr 1fr',
-						gap: '0.5rem',
-						margin: '1.5rem 0',
-					}}
-				>
+				<div className={styles.featuresGrid}>
 					<div>Encryption</div>
 					<div>Mono/C# support</div>
 					<div>Multi-platform</div>
@@ -27,6 +20,30 @@ function HomePage() {
 				<a href="/create" role="button" style={{ width: '100%' }}>
 					Start Building →
 				</a>
+
+				<div className={styles.credits}>
+					<small>
+						Built off of{' '}
+						<a
+							href="https://github.com/appsinacup/action_godot_builder"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							action_godot_builder
+						</a>{' '}
+						by appsinacup
+					</small>
+					<small>
+						Godot Icon by Zayronxio on{' '}
+						<a
+							href="https://icon-icons.com/authors/601-zayronxio"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Icon-Icons.com
+						</a>
+					</small>
+				</div>
 			</article>
 		</main>
 	);
