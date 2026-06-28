@@ -1,13 +1,13 @@
 'use client';
 import camelCase from 'camelcase';
 import { ChangeEvent, useState, useEffect, useRef } from 'react';
-import styles from './form.module.css';
-import { TargetPlatform } from '../types/godot';
-import { useSupportedGodotTags } from '../hooks/useGodotTags';
+import styles from './page.module.css';
+import { TargetPlatform } from '../../types/godot';
+import { useSupportedGodotTags } from '../../hooks/useGodotTags';
 import { useRouter } from 'next/navigation';
-import { EMPTY_FINGERPRINT, FingerprintData } from '../types/fingerprint';
-import { useKey } from '../hooks/useKey';
-import { useVisitorContext } from './fingerprintProvider';
+import { EMPTY_FINGERPRINT, FingerprintData } from '../../types/fingerprint';
+import { useKey } from '../../hooks/useKey';
+import { useVisitorContext } from '../../components/fingerprintProvider';
 import { StatusCodes } from 'http-status-codes';
 
 export interface SubmissionData {

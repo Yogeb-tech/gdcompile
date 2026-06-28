@@ -58,10 +58,14 @@ export default function Template({ children, requireFingerprint = false }: Templ
 				<nav className={styles.nav}>
 					<ul>
 						<li>
-							<strong className={styles.brand}>GDCompile</strong>
+							<strong className={styles.brand}>
+								<a href="/" className="contrast">
+									GDCompile
+								</a>
+							</strong>
 						</li>
 						<li>
-							<a href="./">Request Build</a>
+							<a href="/create">Request Build</a>
 						</li>
 						<li>
 							<a href="/view">Builds</a>
@@ -90,7 +94,7 @@ export default function Template({ children, requireFingerprint = false }: Templ
 						</li>
 						<li>
 							<a className="contrast" onClick={toggleTheme}>
-								{theme === 'dark' ? <IconMoon size={24} /> : <IconSun />}
+								{theme === 'light' ? <IconMoon size={24} /> : <IconSun />}
 							</a>
 						</li>
 					</ul>
