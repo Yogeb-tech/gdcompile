@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
 import snakecaseKeys from 'snakecase-keys';
 import { triggerWorkflow } from '@/app/utils/github';
-import { SubmissionData } from '@/app/components/form';
+import { SubmissionData } from '@/app/(protected-pages)/create/page';
 import { getSupabaseAdmin } from '@/app/utils/supabase';
 
 const supabase = getSupabaseAdmin();
