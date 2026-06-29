@@ -83,9 +83,7 @@ export async function POST(request: Request) {
 		});
 
 		const expiresAt = new Date();
-		// TODO: Set this back for prod
-		expiresAt.setDate(expiresAt.getHours() + 3);
-		// expiresAt.setDate(expiresAt.getDate() + 7);
+		expiresAt.setDate(expiresAt.getDate() + 7);
 
 		const job: JobStatus = {
 			id: id,
