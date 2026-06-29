@@ -10,6 +10,12 @@ export type Branch = {
 	};
 };
 
+export type ReleaseAssetInfo = {
+	name: string;
+	url: string;
+	size: number;
+};
+
 export type Tag = {
 	name: string;
 	commit: {
@@ -286,6 +292,78 @@ export async function deleteArtifact(target_artifact_id: number) {
 		});
 	} catch (error) {
 		console.error('Error deleting artifact: ', error);
+		throw error;
+	}
+}
+
+export async function getReleaseDownloadUrls(requestId: string): Promise<ReleaseAssetInfo[]> {
+	try {
+		const tagName = `build-${requestId}`;
+
+		const { data: release } = await octokit.rest.repos.getReleaseByTag({
+			owner: MY_ORG,
+			repo: MY_REPO,
+			tag: tagName,
+		});
+
+		if (!release.assets || release.assets.length === 0) {
+			throw new Error(`No assets found in release ${tagName}`);
+		}
+
+		// Map to a clean response
+		return release.assets.map((asset) => ({
+			name: asset.name,
+			url: asset.browser_download_url,
+			size: asset.size,
+		}));
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : String(error);
+		throw new Error(`Failed to fetch release assets: ${message}`);
+	}
+}
+
+//  NEW: Delete a Release (replaces deleteAllArtifactsForRun + deleteArtifact)
+export async function deleteRelease(requestId: string): Promise<void> {
+	try {
+		const tagName = `build-${requestId}`;
+
+		// Get the release ID
+		const { data: release } = await octokit.rest.repos.getReleaseByTag({
+			owner: MY_ORG,
+			repo: MY_REPO,
+			tag: tagName,
+		});
+
+		// Delete the release
+		await octokit.rest.repos.deleteRelease({
+			owner: MY_ORG,
+			repo: MY_REPO,
+			release_id: release.id,
+		});
+
+		await octokit.rest.git.deleteRef({
+			owner: MY_ORG,
+			repo: MY_REPO,
+			ref: `tags/${tagName}`,
+		});
+
+		console.log(`Deleted release and tag: ${tagName}`);
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(`Failed to delete release: ${message}`);
+		throw error;
+	}
+}
+
+export async function deleteWorkflowRunAndRelease(target_run_id: number, requestId: string) {
+	try {
+		// Delete the release (permanent storage)
+		await deleteRelease(requestId);
+
+		// Delete the workflow run log (optional, frees up GitHub Actions log storage)
+		await deleteWorkflowRun(target_run_id);
+	} catch (error) {
+		console.error('Error cleaning up workflow run and release:', error);
 		throw error;
 	}
 }
