@@ -23,10 +23,8 @@ export interface SubmissionData {
 
 const platforms: TargetPlatform[] = [
 	{ id: 1, name: 'Windows' },
-	{ id: 2, name: 'macOS' },
 	{ id: 3, name: 'Linux' },
 	{ id: 4, name: 'Android' },
-	{ id: 5, name: 'iOS' },
 	{ id: 6, name: 'Web' },
 ];
 
