@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# README.md
 
-## Getting Started
+## gdcompile
 
-First, run the development server:
+Build custom Godot Engine templates (editor + export templates) on-demand.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### What it does
+
+Compile Godot from source with custom module flags and Mono support. No local build tools required. Returns a ZIP with editor + export templates for all platforms (Windows, macOS, Linux, Web, Android, iOS).
+
+### Features
+
+- Select Godot version (fetched from GitHub API)
+- Toggle Mono (C# support)
+- Custom module flags (e.g., module_3d_enabled=no)
+- Real-time build status with auto-download
+- Anti-abuse: FingerprintJS, 4 builds lifetime, 2 builds/day
+
+### Tech Stack
+
+- Frontend: Next.js, Pico.css, TypeScript
+- Backend: Next.js API routes, Supabase (PostgreSQL)
+- Compute: GitHub Actions (MVP)
+
+### Setup
+
+1. Clone: `git clone https://github.com/yourusername/gdcompile.git`
+2. Install: `npm install`
+3. Create `.env.local`:
+```
+GITHUB_TOKEN=your_token
+BUILD_REPO_OWNER=yourusername
+BUILD_REPO_NAME=action_godot_builder
+WORKFLOW_ID=build.yml
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Run: `npm run dev`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Frontend (Vercel) -> API Routes -> GitHub Actions -> Supabase
 
-## Learn More
+### Roadmap
 
-To learn more about Next.js, take a look at the following resources:
+- Complete: Next.js setup, build form, API routes, Supabase DB, GitHub Actions integration, polling, download endpoint
+- In Progress: Vercel deployment, daily build cap, landing page
+- Planned: AWS migration (API Gateway + Lambda + SQS + ECS Fargate + S3)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Limitations
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 30-60 min build time
+- 4 builds lifetime per user
+- Godot 4.6+ only
+- 1 active build at a time
 
-## Deploy on Vercel
+### Credits
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Godot Icon by Zayronxio on Icon-Icons.com
+- appsinacup for action_godot_builder
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
