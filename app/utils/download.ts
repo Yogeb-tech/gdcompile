@@ -22,33 +22,28 @@ export async function downloadAllWorkflowArtifacts(runId: number): Promise<void>
 			return;
 		}
 
-		// Create ZIP
-		const zip = new JSZip();
-
 		// Download all artifacts
 		for (let i = 0; i < artifacts.length; i++) {
 			const artifact = artifacts[i];
 			console.log(`Downloading ${i + 1}/${artifacts.length}: ${artifact.name}`);
 
-			const fileResponse = await fetch(artifact.url);
-			if (!fileResponse.ok) {
-				console.warn(`Failed to download ${artifact.name}, skipping...`);
-				continue;
-			}
+			const link = document.createElement('a');
+			link.href = artifact.url;
+			link.setAttribute('download', `${artifact.name}.zip`);
+			link.style.display = 'none';
 
-			const blob = await fileResponse.blob();
-			zip.file(`${artifact.name}`, blob);
+			document.body.appendChild(link);
+			link.click();
+
+			// Cleanup
+			setTimeout(() => document.body.removeChild(link), 100);
+
+			// Wait between downloads to avoid browser throttling
+			//if (i < artifacts.length - 1) {
+			//	await new Promise((resolve) => setTimeout(resolve, 300));
+			//}
 		}
 
-		// Generate and download single ZIP
-		console.log('Creating ZIP file...');
-		const zipBlob = await zip.generateAsync({
-			type: 'blob',
-			compression: 'DEFLATE',
-			compressionOptions: { level: 6 },
-		});
-
-		saveAs(zipBlob, `workflow-${runId}-artifacts.zip`);
 		console.log('Download complete!');
 	} catch (error) {
 		console.error('Download failed:', error);
