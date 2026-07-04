@@ -1,6 +1,5 @@
-// app/api/download/route.ts
 import { NextResponse } from 'next/server';
-import { getAllArtifactDownloadUrls } from '@/app/utils/github';
+import { getAllArtifactDownloadUrls, getReleaseDownloadUrls } from '@/app/utils/github';
 import { StatusCodes } from 'http-status-codes';
 
 export async function GET(request: Request) {
@@ -15,7 +14,7 @@ export async function GET(request: Request) {
 	}
 
 	try {
-		const artifacts = await getAllArtifactDownloadUrls(parseInt(runId));
+		const artifacts = await getAllArtifactDownloadUrls(Number(runId));
 
 		// Return urls as a JSON array instead of redirecting
 		console.log(`[API] Successfully fetched ${artifacts.length} artifact URLs for runId: ${runId}`);

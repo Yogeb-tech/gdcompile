@@ -5,6 +5,7 @@ import { IconMoon, IconSun } from '@tabler/icons-react';
 import { SiGithub, SiKofi } from 'react-icons/si';
 import { useTheme } from '../hooks/useTheme';
 import { useVisitorContext } from './fingerprintProvider';
+import Link from 'next/link';
 
 interface TemplateProps {
 	children: React.ReactNode;
@@ -59,21 +60,21 @@ export default function Template({ children, requireFingerprint = false }: Templ
 					<ul>
 						<li>
 							<strong className={styles.brand}>
-								<a href="/" className="contrast">
+								<Link href="/" className="contrast">
 									GDCompile
-								</a>
+								</Link>
 							</strong>
 						</li>
 						<li>
-							<a href="/create">Request Build</a>
+							<Link href="/create">Request Build</Link>
 						</li>
 						<li>
-							<a href="/view">Builds</a>
+							<Link href="/view">Builds</Link>
 						</li>
 						<li>
-							<a href="/privacy-policy" className="">
+							<Link href="/privacy-policy" className="">
 								Privacy Policy
-							</a>
+							</Link>
 						</li>
 					</ul>
 
