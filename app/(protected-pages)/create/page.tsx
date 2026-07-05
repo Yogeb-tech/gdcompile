@@ -336,7 +336,7 @@ export default function Form() {
 					</div>
 				)}
 
-				<button type="submit" disabled={isSubmitting || !fingerprint} aria-busy={isSubmitting}>
+				<button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
 					{isSubmitting ? 'Generating...' : 'Generate Build'}
 				</button>
 			</form>
