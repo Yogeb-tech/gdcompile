@@ -5,6 +5,7 @@ import snakecaseKeys from 'snakecase-keys';
 import { triggerWorkflow } from '@/app/utils/github';
 import { SubmissionData } from '@/app/(protected-pages)/create/page';
 import { getSupabaseAdmin } from '@/app/utils/supabase';
+import { getOrCreateSession } from '@/app/utils/session';
 
 const supabase = getSupabaseAdmin();
 const BUILD_LIMITS = 4;
@@ -24,7 +25,6 @@ export async function POST(request: Request) {
 			targetPlatforms,
 			buildTarget,
 			additionalFlags,
-			fingerprint,
 			monoEnabled,
 		} = submissionData;
 
@@ -42,11 +42,15 @@ export async function POST(request: Request) {
 				status: StatusCodes.BAD_REQUEST,
 			});
 		}
+
+		// Get or create session
+		const { sessionId, setCookie } = await getOrCreateSession(request);
+
 		console.log('Full request body:', request.body);
 		const { count } = await supabase
 			.from('jobs')
 			.select('*', { count: 'exact' })
-			.eq('fingerprint->>hash', fingerprint.hash)
+			.eq('session_id', sessionId)
 			.is('deleted_at', null);
 
 		if (count && count >= BUILD_LIMITS) {
@@ -93,10 +97,13 @@ export async function POST(request: Request) {
 			createdAt: new Date().toISOString(),
 			expiresAt: expiresAt.toISOString(),
 			targetPlatforms: targetPlatforms,
-			fingerprint: fingerprint,
+			sessionId: sessionId,
 		};
 
-		const dbJob = snakecaseKeys(job as unknown as Record<string, unknown>, { deep: true });
+		const dbJob = {
+			...snakecaseKeys(job as unknown as Record<string, unknown>, { deep: true }),
+			session_id: sessionId,
+		};
 		const { error } = await supabase.from('jobs').insert(dbJob);
 
 		if (error) {
@@ -115,7 +122,9 @@ export async function POST(request: Request) {
 		if (encryptionKey) console.log(`[ENCRYPTION] Key provided`);
 		console.log(JSON.stringify(job, null, 2));
 
-		return NextResponse.json(job, { status: StatusCodes.ACCEPTED });
+		const response = NextResponse.json(job, { status: StatusCodes.ACCEPTED });
+		response.headers.set('Set-Cookie', setCookie);
+		return response;
 	} catch (error) {
 		console.error('Dispatch error:', error);
 		return NextResponse.json(
@@ -125,10 +134,13 @@ export async function POST(request: Request) {
 	}
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+	const { sessionId } = await getOrCreateSession(request);
+
 	const { data: jobs, error } = await supabase
 		.from('jobs')
 		.select('*')
+		.eq('session_id', sessionId)
 		.order('created_at', { ascending: false })
 		.limit(10);
 
@@ -140,5 +152,6 @@ export async function GET() {
 		});
 	}
 
-	return Response.json({ jobs: jobs || [] });
+	const response = Response.json({ jobs: jobs || [] });
+	return response;
 }

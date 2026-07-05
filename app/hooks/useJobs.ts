@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { JobStatus } from '../types/godot';
 
 interface UseJobsOptions {
-	visitorId?: string | null;
 	skip?: boolean;
 }
 
@@ -12,23 +11,24 @@ interface UseJobsReturn {
 	error: string | null;
 }
 
-export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJobsReturn {
+export function useJobs({ skip = false }: UseJobsOptions = {}): UseJobsReturn {
 	const [jobs, setJobs] = useState<JobStatus[] | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchJobs = async () => {
-			if (!visitorId) {
-				console.log('[DEBUG] missing visitorid for useJobs.ts');
-			}
-			if (!visitorId || skip) return;
+			if (skip) return;
 
 			try {
 				setLoading(true);
 				setError(null);
-				const response = await fetch(`/api/workflows/fingerprint/${visitorId}`);
+
+				const response = await fetch('/api/workflows', {
+					credentials: 'include', // Send cookies with request
+				});
 				if (!response.ok) throw new Error('Failed to fetch jobs');
+
 				const result = await response.json();
 				setJobs(result.jobs);
 			} catch (err) {
@@ -41,7 +41,7 @@ export function useJobs({ visitorId, skip = false }: UseJobsOptions = {}): UseJo
 		};
 
 		fetchJobs();
-	}, [visitorId, skip]);
+	}, [skip]);
 
 	return { jobs, loading, error };
 }

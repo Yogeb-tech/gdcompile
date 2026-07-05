@@ -5,13 +5,10 @@ import styles from './page.module.css';
 import { TargetPlatform } from '../../types/godot';
 import { useSupportedGodotTags } from '../../hooks/useGodotTags';
 import { useRouter } from 'next/navigation';
-import { EMPTY_FINGERPRINT, FingerprintData } from '../../types/fingerprint';
 import { useKey } from '../../hooks/useKey';
-import { useVisitorContext } from '../../components/fingerprintProvider';
 import { StatusCodes } from 'http-status-codes';
 
 export interface SubmissionData {
-	fingerprint: FingerprintData;
 	buildName: string;
 	godotVersion: string;
 	encryptionKey: string;
@@ -29,7 +26,6 @@ const platforms: TargetPlatform[] = [
 ];
 
 export default function Form() {
-	const { fingerprintData: fingerprint } = useVisitorContext();
 	const { exportBase64, generateAESKey } = useKey();
 	const router = useRouter();
 	const { tags, loading: tagsLoading, error: tagsError } = useSupportedGodotTags();
@@ -42,7 +38,6 @@ export default function Form() {
 	};
 
 	const [formData, setFormData] = useState<SubmissionData>({
-		fingerprint: EMPTY_FINGERPRINT,
 		buildName: '',
 		godotVersion: defaultGodotVersion,
 		encryptionKey: '',
@@ -115,19 +110,17 @@ export default function Form() {
 		setIsSumbitting(true);
 
 		try {
-			// Combine form with fingerprint
-			const submissionData: SubmissionData = {
-				...formData,
-				fingerprint: fingerprint!,
-			};
+			// Form data is already in SubmissionData format
+			const submissionData: SubmissionData = formData;
 
-			console.log('SUBMISSION WITH FINGERPRINT:\n' + JSON.stringify(submissionData, null, 2));
+			console.log('SUBMISSION:\n' + JSON.stringify(submissionData, null, 2));
 
-			// Make dispatch api call
+			// Make dispatch api call - session ID will be sent via cookies
 			const response = await fetch('/api/workflows', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(submissionData),
+				credentials: 'include', // Send cookies with request
 			});
 
 			if (!response.ok) {

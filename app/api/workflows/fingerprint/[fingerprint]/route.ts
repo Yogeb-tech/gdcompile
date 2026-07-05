@@ -1,25 +1,23 @@
 import { getSupabaseAdmin } from '@/app/utils/supabase';
+import { getOrCreateSession } from '@/app/utils/session';
 import camelcaseKeys from 'camelcase-keys';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
 
 const supabase = getSupabaseAdmin();
 
-export async function GET(
-	request: Request,
-	{ params }: { params: Promise<{ fingerprint: string }> }
-) {
+export async function GET(request: Request) {
 	try {
-		const { fingerprint } = await params;
-		console.log(`[API]  ${fingerprint}`);
+		// Get or create session for the user
+		const { sessionId } = await getOrCreateSession(request);
 
 		const { data: rawJobs, error } = await supabase
 			.from('jobs')
 			.select('*')
-			.eq('fingerprint->>hash', fingerprint)
+			.eq('session_id', sessionId)
 			.is('deleted_at', null);
 
-		console.log(`[API]  ${JSON.stringify(rawJobs, null, 2)}`);
+		console.log(`[API] Session ${sessionId} - ${JSON.stringify(rawJobs, null, 2)}`);
 
 		if (error) {
 			console.error('Supabase error:', error);

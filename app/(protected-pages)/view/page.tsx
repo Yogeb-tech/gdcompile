@@ -1,6 +1,5 @@
 'use client';
 import { useJobs } from '../../hooks/useJobs';
-import { useVisitorContext } from '../../components/fingerprintProvider';
 import { JobStatus, targetPlatformDisplayString } from '@/app/types/godot';
 import { useState } from 'react';
 import { downloadAllWorkflowArtifacts } from '@/app/utils/download';
@@ -8,13 +7,9 @@ import { IconDownload, IconTrash } from '@tabler/icons-react';
 import { capitalCase } from 'change-case';
 
 export default function ViewBuilds() {
-	const { fingerprintData } = useVisitorContext();
 	const [downloadingRunId, setDownloadingRunId] = useState<number | null>(null);
 
-	const { jobs, loading, error } = useJobs({
-		visitorId: fingerprintData?.hash ?? undefined,
-		skip: fingerprintData === null || fingerprintData.hash === null,
-	});
+	const { jobs, loading, error } = useJobs();
 
 	if (loading) return <div>Loading…</div>;
 	if (error) return <div className="error-text">Error: {error}</div>;

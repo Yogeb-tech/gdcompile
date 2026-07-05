@@ -1,5 +1,3 @@
-import { FingerprintData } from './fingerprint';
-
 export type TargetPlatform = {
 	id: number;
 	name: 'Windows' | 'macOS' | 'Linux' | 'Android' | 'iOS' | 'Web';
@@ -16,7 +14,7 @@ export interface JobStatus {
 	expiresAt: string;
 	conclusion?: string;
 	targetPlatforms: TargetPlatform['name'][];
-	fingerprint: FingerprintData;
+	sessionId?: string;
 }
 
 export function targetPlatformDisplayString(job: JobStatus): string {
