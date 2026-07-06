@@ -63,6 +63,7 @@ function BuildRow({
 }) {
 	const isInProgress = job.conclusion == null;
 	const buildFailed = job.conclusion === 'failure';
+	console.log(job);
 
 	return (
 		<tr>

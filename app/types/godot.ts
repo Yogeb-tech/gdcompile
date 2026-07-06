@@ -18,6 +18,9 @@ export interface JobStatus {
 }
 
 export function targetPlatformDisplayString(job: JobStatus): string {
-	const text = job.targetPlatforms.join(', ');
-	return text;
+	const platforms = job.targetPlatforms ?? [];
+	if (!platforms || platforms.length === 0) {
+		return '-';
+	}
+	return platforms.join(', ');
 }

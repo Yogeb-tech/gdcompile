@@ -1,5 +1,8 @@
 import { getSupabaseAdmin } from './supabase';
 
+// TODO: Re-evaluate fingerprinting strategy. Currently using cookies only. Consider fingerprint for MFA or session recovery if cookies are cleared or smth.
+// TODO: If I don't find a use case for fingeprint just deprecate and remove it
+
 const supabase = getSupabaseAdmin();
 const SESSION_COOKIE_NAME = '__HOST-gdcompile_session_id';
 const SESSION_COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 1 year

@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
 import snakecaseKeys from 'snakecase-keys';
 import { triggerWorkflow } from '@/app/utils/github';
-import { SubmissionData } from '@/app/(protected-pages)/create/page';
+import { SubmissionData } from '@/app/(public-pages)/create/page';
 import { getSupabaseAdmin } from '@/app/utils/supabase';
 import { getOrCreateSession } from '@/app/utils/session';
 
@@ -141,8 +141,9 @@ export async function GET(request: Request) {
 		.from('jobs')
 		.select('*')
 		.eq('session_id', sessionId)
+		.is('deleted_at', null)
 		.order('created_at', { ascending: false })
-		.limit(10);
+		.limit(BUILD_LIMITS);
 
 	if (error) {
 		console.error('[API] Supabase select error: ', error);
@@ -152,6 +153,22 @@ export async function GET(request: Request) {
 		});
 	}
 
-	const response = Response.json({ jobs: jobs || [] });
-	return response;
+	// Map to camelCase (use camelcase-keys, already used elsewhere)
+	const mappedJobs = (jobs || []).map((job) => ({
+		id: job.id,
+		buildName: job.build_name,
+		godotVersion: job.godot_version,
+		status: job.status,
+		conclusion: job.conclusion,
+		createdAt: job.created_at,
+		completedAt: job.completed_at,
+		expiresAt: job.expires_at,
+		downloadUrl: job.download_url,
+		sessionId: job.session_id,
+		targetPlatforms: job.target_platforms ?? [],
+		artifactDeleted: job.artifact_deleted,
+		deletedAt: job.deleted_at,
+	}));
+
+	return Response.json({ jobs: mappedJobs });
 }
