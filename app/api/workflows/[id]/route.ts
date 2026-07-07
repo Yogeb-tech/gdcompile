@@ -1,5 +1,6 @@
 import { deleteWorkflowRunAndArtifacts } from '@/app/utils/github';
 import { getSupabaseAdmin } from '@/app/utils/supabase';
+import { getOrCreateSession } from '@/app/utils/session';
 import { StatusCodes } from 'http-status-codes';
 import { NextResponse } from 'next/server';
 
@@ -8,8 +9,23 @@ const supabase = getSupabaseAdmin();
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const { id } = await params;
+		const { sessionId } = await getOrCreateSession(request);
 
 		console.log('[API] Request ID: ', id);
+
+		// Verify the job belongs to this session
+		const { data: job } = await supabase
+			.from('jobs')
+			.select('session_id')
+			.eq('id', Number(id))
+			.single();
+
+		if (!job || job.session_id !== sessionId) {
+			return NextResponse.json(
+				{ error: 'Unauthorized' },
+				{ status: StatusCodes.FORBIDDEN }
+			);
+		}
 
 		// Delete from db
 		const { error } = await supabase

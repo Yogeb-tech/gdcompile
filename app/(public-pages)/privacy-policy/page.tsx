@@ -2,20 +2,18 @@ export default function PrivacyPage() {
 	return (
 		<main className="container">
 			<article>
-				<h1>Privacy Policy</h1>
+				<h1>Privacy</h1>
+
 				<p>
-					I don&apos;t collect any personal data. I use a browser fingerprint (a one-way hash) only
-					to prevent abuse and enforce daily build limits.
+					This project is <a href="https://github.com/Yogeb-tech/gdcompile">open source</a>. No
+					personal data is collected or stored.
 				</p>
+
 				<p>
-					Build requests are sent to GitHub Actions to compile Godot. GitHub only receives your
-					build configuration (Godot version, modules, and .profile file) - no personal data is ever
-					shared.
+					A session cookie is used only to remember your builds. It contains a random ID not linked
+					to you.
 				</p>
-				<p>
-					No cookies are used. No data is sold or monetized. I don&apos;t track you across websites
-					or store any identifiable information.
-				</p>
+
 				<p>
 					<small>Last updated: {new Date().toLocaleDateString()}</small>
 				</p>

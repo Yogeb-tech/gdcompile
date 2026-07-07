@@ -39,9 +39,9 @@ export async function downloadAllWorkflowArtifacts(runId: number): Promise<void>
 			setTimeout(() => document.body.removeChild(link), 100);
 
 			// Wait between downloads to avoid browser throttling
-			//if (i < artifacts.length - 1) {
-			//	await new Promise((resolve) => setTimeout(resolve, 300));
-			//}
+			if (i < artifacts.length - 1) {
+				await new Promise((resolve) => setTimeout(resolve, 300));
+			}
 		}
 
 		console.log('Download complete!');
